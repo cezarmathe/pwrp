@@ -1,0 +1,11 @@
+# An example indexing configuration file
+
+repositories = [
+    "github.com/myname/myrepo.git"
+]
+
+protocol = "git"
+
+dest_dir = "/"
+
+ignore_failed = false
