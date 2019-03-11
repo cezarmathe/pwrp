@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"os"
 	"pppi/indexer"
 
 	"github.com/sirupsen/logrus"
@@ -12,7 +13,13 @@ var (
 )
 
 func init() {
-	logrus.SetLevel(logrus.DebugLevel)
+	/*check whether to use debug level or not*/
+	logLevel := os.Getenv("DEBUG_LOG_LEVEL")
+	if logLevel != "" {
+		logrus.SetLevel(logrus.DebugLevel)
+	} else {
+		logrus.SetLevel(logrus.InfoLevel)
+	}
 
 	logrus.Debug("parsing command line flags")
 

@@ -1,6 +1,20 @@
 package indexer
 
-import "github.com/sirupsen/logrus"
+import (
+	"os"
+
+	"github.com/sirupsen/logrus"
+)
+
+func init() {
+	/*check whether to use debug level or not*/
+	logLevel := os.Getenv("DEBUG_LOG_LEVEL")
+	if logLevel != "" {
+		logrus.SetLevel(logrus.DebugLevel)
+	} else {
+		logrus.SetLevel(logrus.InfoLevel)
+	}
+}
 
 func StartJob() (error, bool) {
 	logrus.Info("starting indexing job")
