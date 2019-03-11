@@ -30,7 +30,7 @@ var config Config
 // Config is a configuration data structure for indexing projects
 type Config struct {
 	Repositories         []string `toml:"repositories"`
-	CloneProtocol        Protocol `toml:"protocol, omitempty"`
+	Protocol             Protocol `toml:"protocol, omitempty"`
 	DestinationDirectory string   `toml:"dest_dir, omitempty"`
 	IgnoreFailed         bool     `toml:"ignore_failed, omitempty"`
 }
