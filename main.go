@@ -3,12 +3,14 @@ package main
 import (
 	"flag"
 	"os"
-	"pppi/indexer"
+	"pppi/config"
+	"pppi/recording"
 
 	"github.com/sirupsen/logrus"
 )
 
 var (
+	cfg                    config.Config
 	indexingConfigFileName string
 )
 
@@ -21,9 +23,10 @@ func init() {
 		logrus.SetLevel(logrus.InfoLevel)
 	}
 
+	/*parse flags*/
 	logrus.Debug("parsing command line flags")
 
-	flag.StringVar(&indexingConfigFileName, "i", "", "file path for the indexing configuration file")
+	flag.StringVar(&indexingConfigFileName, "cfg", "", "file path for the configuration file")
 
 	flag.Parse()
 
@@ -31,16 +34,25 @@ func init() {
 		logrus.Fatal("no indexing config file provided")
 	}
 	logrus.Debug("parsed command line flags")
+
+	/*load configuration*/
+	cfg, err := config.LoadConfig(indexingConfigFileName)
+	if err != nil {
+		logrus.Fatal("encountered an error when reading the configuration ", err)
+	}
+
+	/*set appropriate configurations*/
+	recording.SetConfig(cfg.Recording)
 }
 
 func main() {
-	indexer.LoadConfig(indexingConfigFileName)
-
-	err, canContinue := indexer.StartJob()
-	if !canContinue {
-		logrus.Fatal(err)
-	}
-	if err != nil {
-		logrus.Error(err)
+	/*validate recording config*/
+	recordingErrs := recording.ValidateConfig()
+	if len(recordingErrs) != 0 {
+		for _, err := range recordingErrs {
+			if err != nil {
+				logrus.Warn(err)
+			}
+		}
 	}
 }

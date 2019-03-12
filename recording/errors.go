@@ -12,16 +12,17 @@ var (
 
 /*ErrMissingBranch describes a missing branch*/
 type ErrMissingBranch struct {
-	Branch string
+	Branch     string
+	Repository string
 }
 
 /*NewErrMissingBranch returns a new ErrMissingBranch*/
-func NewErrMissingBranch(branch string) *ErrMissingBranch {
-	return &ErrMissingBranch{branch}
+func NewErrMissingBranch(branch, repository string) *ErrMissingBranch {
+	return &ErrMissingBranch{branch, repository}
 }
 
 func (err *ErrMissingBranch) Error() string {
-	return "metadata branch " + err.Branch + " not found"
+	return "metadata branch " + err.Branch + " not found in " + err.Repository
 }
 
 /*ErrNoPermissions describes a missing branch*/
@@ -63,5 +64,5 @@ func NewErrBadProtocol(protocol git.Protocol) *ErrBadProtocol {
 }
 
 func (err *ErrBadProtocol) Error() string {
-	return "bad protocol: " + string(err.Protocol)
+	return "the protocol " + string(err.Protocol) + " specified in the configuration is bad"
 }

@@ -50,9 +50,9 @@ func SetConfig(cfg Config) {
 	config = cfg
 }
 
-/*validateConfig checks the configuration and validates its integrity*/
-func validateConfig() []error {
-	logrus.Info("validating config file")
+/*ValidateConfig checks the configuration and validates its integrity*/
+func ValidateConfig() []error {
+	logrus.Info("validating the recording configuration")
 	errs := make([]error, 5)
 
 	/*checking if any repositories were provided*/
@@ -62,7 +62,9 @@ func validateConfig() []error {
 	}
 
 	/*checking if the protocol is good*/
-	// todo assign the default protocol if it is missing
+	if config.Protocol == "" {
+		config.Protocol = git.GIT
+	}
 	if !(config.Protocol == git.GIT || config.Protocol == git.HTTPS || config.Protocol == git.SSH) {
 		logrus.Debug("provided protocol is bad")
 		errs = append(errs, NewErrBadProtocol(config.Protocol))
@@ -99,21 +101,23 @@ func validateConfig() []error {
 
 	/*checking each repository's URL and protocol*/
 	logrus.Debug("validating repository URL's")
-	for index, repositoryURL := range config.Repositories {
-		logrus.Debug("checking", repositoryURL)
+	for index := range config.Repositories {
+		logrus.Debug("checking ", config.Repositories[index])
 
-		/*check if it has a protocol*/
-		if !strings.HasPrefix(repositoryURL, string(git.GIT)) || !strings.HasPrefix(repositoryURL, string(git.SSH)) || !strings.HasPrefix(repositoryURL, string(git.HTTPS)) {
-			config.Repositories[index] = strings.Join([]string{}, "")
-			// todo finish
+		/*check if it has a protocol and add it if it's missing*/
+		if !strings.HasPrefix(config.Repositories[index], string(git.GIT)) || !strings.HasPrefix(config.Repositories[index], string(git.SSH)) || !strings.HasPrefix(config.Repositories[index], string(git.HTTPS)) {
+			config.Repositories[index] = strings.Join([]string{
+				string(config.Protocol),
+				"://",
+				config.Repositories[index],
+			}, "")
 		}
 
 		/*checking if the url is valid*/
-		_, err := url.ParseRequestURI(repositoryURL)
+		_, err := url.ParseRequestURI(config.Repositories[index])
 		if err != nil {
-			errs = append(errs, NewErrBadURL(repositoryURL))
+			errs = append(errs, NewErrBadURL(config.Repositories[index]))
 		}
 	}
-
 	return errs
 }

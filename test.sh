@@ -12,5 +12,5 @@ rm pppi
 
 cd .local/test
 
-./pppi -i "$(pwd)/index_config.toml"
+./pppi --cfg "$(pwd)/index_config.toml"
 
