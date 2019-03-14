@@ -21,3 +21,8 @@ func init() {
 	}
 	defaultPath = homedir + "/.local/share/pppi-storage"
 }
+
+/*Record starts the recording process*/
+func Record() bool {
+	return true
+}

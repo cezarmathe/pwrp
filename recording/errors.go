@@ -7,7 +7,7 @@ import (
 
 var (
 	/*ErrNoRepositories indicates that no repositories were specified in the config*/
-	ErrNoRepositories = errors.New("no repositories given")
+	ErrNoRepositories = errors.New("empty repository url list")
 )
 
 /*ErrMissingBranch describes a missing branch*/
@@ -64,5 +64,19 @@ func NewErrBadProtocol(protocol git.Protocol) *ErrBadProtocol {
 }
 
 func (err *ErrBadProtocol) Error() string {
-	return "the protocol " + string(err.Protocol) + " specified in the configuration is bad"
+	return "the protocol \"" + string(err.Protocol) + "\" specified in the configuration is bad"
+}
+
+/*ErrCreateStorageDir describes the creation of a certain storage directory*/
+type ErrCreateStorageDir struct {
+	Dirname string
+}
+
+/*NewErrCreateStorageDir returns a new ErrCreateStorageDir*/
+func NewErrCreateStorageDir(dirname string) *ErrCreateStorageDir {
+	return &ErrCreateStorageDir{dirname}
+}
+
+func (err *ErrCreateStorageDir) Error() string {
+	return "encountered an error when creating the storage directory at \"" + err.Dirname + "\""
 }

@@ -47,12 +47,8 @@ func init() {
 
 func main() {
 	/*validate recording config*/
-	recordingErrs := recording.ValidateConfig()
-	if len(recordingErrs) != 0 {
-		for _, err := range recordingErrs {
-			if err != nil {
-				logrus.Warn(err)
-			}
-		}
+	canContinue := recording.ValidateConfig()
+	if !canContinue {
+		logrus.Fatal("cannot continue due to errors")
 	}
 }
