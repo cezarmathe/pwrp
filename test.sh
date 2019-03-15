@@ -1,16 +1,6 @@
 #!/bin/bash
 
-if [[ -z "$1" ]]; then
-    export DEBUG_LOG_LEVEL=true
-fi
+export PWRP_DEBUG=true
 
-go build
-
-cp pppi .local/test/pppi
-
-rm pppi
-
-cd .local/test
-
-./pppi --cfg "$(pwd)/index_config.toml"
+go run main.go --config .local/pwrp.toml $@
 

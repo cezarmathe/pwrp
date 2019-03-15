@@ -1,28 +1,16 @@
 package recording
 
-import (
-	"os"
-
-	"github.com/sirupsen/logrus"
-)
-
-func init() {
-	/*check whether to use debug level or not*/
-	logLevel := os.Getenv("DEBUG_LOG_LEVEL")
-	if logLevel != "" {
-		logrus.SetLevel(logrus.DebugLevel)
-	} else {
-		logrus.SetLevel(logrus.InfoLevel)
-	}
-
-	homedir, err := os.Getwd()
-	if err != nil {
-		logrus.Warn("could not open homedir")
-	}
-	defaultPath = homedir + "/.local/share/pppi-storage"
+/*Recorder is a struct that does the recording process.*/
+type Recorder struct {
+	Config *Config
 }
 
-/*Record starts the recording process*/
-func Record() bool {
+/*NewRecorder creates a new Recorder with the specified configuration.*/
+func NewRecorder(config *Config) *Recorder {
+	return &Recorder{config}
+}
+
+/*Record starts the recording process.*/
+func (recorder *Recorder) Record() bool {
 	return true
 }

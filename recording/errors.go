@@ -2,7 +2,8 @@ package recording
 
 import (
 	"errors"
-	"pppi/git"
+
+	"github.com/cezarmathe/pwrp/git"
 )
 
 var (
@@ -23,20 +24,6 @@ func NewErrMissingBranch(branch, repository string) *ErrMissingBranch {
 
 func (err *ErrMissingBranch) Error() string {
 	return "metadata branch " + err.Branch + " not found in " + err.Repository
-}
-
-/*ErrNoPermissions describes a missing branch*/
-type ErrNoPermissions struct {
-	Path string
-}
-
-/*NewErrNoPermissions returns a new ErrNoPermissions*/
-func NewErrNoPermissions(path string) *ErrNoPermissions {
-	return &ErrNoPermissions{path}
-}
-
-func (err *ErrNoPermissions) Error() string {
-	return "no permissions for writing data at " + err.Path
 }
 
 /*ErrBadURL describes a missing branch*/
@@ -65,18 +52,4 @@ func NewErrBadProtocol(protocol git.Protocol) *ErrBadProtocol {
 
 func (err *ErrBadProtocol) Error() string {
 	return "the protocol \"" + string(err.Protocol) + "\" specified in the configuration is bad"
-}
-
-/*ErrCreateStorageDir describes the creation of a certain storage directory*/
-type ErrCreateStorageDir struct {
-	Dirname string
-}
-
-/*NewErrCreateStorageDir returns a new ErrCreateStorageDir*/
-func NewErrCreateStorageDir(dirname string) *ErrCreateStorageDir {
-	return &ErrCreateStorageDir{dirname}
-}
-
-func (err *ErrCreateStorageDir) Error() string {
-	return "encountered an error when creating the storage directory at \"" + err.Dirname + "\""
 }
