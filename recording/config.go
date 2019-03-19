@@ -5,14 +5,14 @@ import (
 
 	"strings"
 
-	"github.com/cezarmathe/pwrp/git"
+	"github.com/cezarmathe/pwrp/gitops"
 	log "github.com/sirupsen/logrus"
 )
 
 /*Config contains configurations for the recording process*/
 type Config struct {
-	Repositories []string     `toml:"repositories"`
-	Protocol     git.Protocol `toml:"protocol"`
+	Repositories []string        `toml:"repositories"`
+	Protocol     gitops.Protocol `toml:"protocol"`
 	StoragePath  string
 	Skips        struct {
 		MissingBranch bool `toml:"missing_branch"`
@@ -27,7 +27,7 @@ func NewDummyConfig() *Config {
 	log.Debug("creating new dummy recording config")
 	return &Config{
 		Repositories: []string{},
-		Protocol:     git.GIT,
+		Protocol:     gitops.GIT,
 		StoragePath:  "/home/username/.local/share/pwrp-storage",
 	}
 }
@@ -52,9 +52,9 @@ func (recorder *Recorder) ValidateConfig() bool {
 	log.Debug("clone protocol validation: ", "checking")
 	if recorder.Config.Protocol == "" {
 		log.Debug("clone protocol validation: ", "setting default protocol")
-		recorder.Config.Protocol = git.GIT
+		recorder.Config.Protocol = gitops.GIT
 	}
-	if !(recorder.Config.Protocol == git.GIT || recorder.Config.Protocol == git.HTTPS || recorder.Config.Protocol == git.SSH) {
+	if !(recorder.Config.Protocol == gitops.GIT || recorder.Config.Protocol == gitops.HTTPS || recorder.Config.Protocol == gitops.SSH) {
 		log.Trace("recorder.ValidateConfig(): ", "protocol is bad")
 		checkConfigError(recorder.Config.Skips.BadProtocol, &shouldContinue, NewErrBadProtocol(recorder.Config.Protocol))
 	}
@@ -65,7 +65,7 @@ func (recorder *Recorder) ValidateConfig() bool {
 		log.Debug("checking ", recorder.Config.Repositories[index])
 		// todo 14/03/2019: split url string by "://" and check the protocol
 		/*check if it has a protocol and add it if it's missing*/
-		if !strings.HasPrefix(recorder.Config.Repositories[index], string(git.GIT)) || !strings.HasPrefix(recorder.Config.Repositories[index], string(git.SSH)) || !strings.HasPrefix(recorder.Config.Repositories[index], string(git.HTTPS)) {
+		if !strings.HasPrefix(recorder.Config.Repositories[index], string(gitops.GIT)) || !strings.HasPrefix(recorder.Config.Repositories[index], string(gitops.SSH)) || !strings.HasPrefix(recorder.Config.Repositories[index], string(gitops.HTTPS)) {
 			recorder.Config.Repositories[index] = strings.Join([]string{
 				string(recorder.Config.Protocol),
 				"://",

@@ -1,4 +1,4 @@
-package git
+package gitops
 
 /*Protocol used for cloning*/
 type Protocol string

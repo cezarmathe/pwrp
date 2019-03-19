@@ -3,7 +3,7 @@ package recording
 import (
 	"errors"
 
-	"github.com/cezarmathe/pwrp/git"
+	"github.com/cezarmathe/pwrp/gitops"
 )
 
 var (
@@ -42,11 +42,11 @@ func (err *ErrBadURL) Error() string {
 
 /*ErrBadProtocol describes a missing branch*/
 type ErrBadProtocol struct {
-	Protocol git.Protocol
+	Protocol gitops.Protocol
 }
 
 /*NewErrBadProtocol returns a new ErrBadProtocol*/
-func NewErrBadProtocol(protocol git.Protocol) *ErrBadProtocol {
+func NewErrBadProtocol(protocol gitops.Protocol) *ErrBadProtocol {
 	return &ErrBadProtocol{protocol}
 }
 

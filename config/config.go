@@ -59,7 +59,7 @@ func ValidateConfig(config *Config) bool {
 		log.Error("storage path validation: ", "unknown error - ", err)
 	}
 
-	shouldContinue = recording.NewRecorder(config.Recording).ValidateConfig() && shouldContinue
+	shouldContinue = recording.NewRecorder(config.Recording, nil).ValidateConfig() && shouldContinue
 	log.Trace("ValidateConfig(): ", "returned")
 	return shouldContinue
 }

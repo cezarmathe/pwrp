@@ -49,9 +49,9 @@ func runRootCmd(cmd *cobra.Command, args []string) {
 
 	log.Debug("root cmd: ", "running recorder.Record()")
 	if success := recorder.Record(); success == false {
-		log.Fatal("cli: ", "cannot continue")
+		log.Fatal("cannot continue")
 	}
-	log.Info("cli: ", "recording was successful")
+	log.Info("can continue")
 
 	log.Trace("runRootCmd(): ", "returned")
 }
