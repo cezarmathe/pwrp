@@ -16,12 +16,15 @@
 	along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-package main
+package gitops
 
-import (
-	"github.com/cezarmathe/pwrp/cmd"
+/*Protocol used for cloning*/
+type Protocol string
+
+/*Cloning protocols*/
+const (
+	HTTPS           Protocol = "https"
+	SSH             Protocol = "ssh"
+	GIT             Protocol = "git"
+	DefaultProtocol Protocol = GIT
 )
-
-func main() {
-	cmd.Execute()
-}
