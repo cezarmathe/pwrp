@@ -2,4 +2,10 @@
 
 This document specifies my future plans with this project.
 
-WIP
+- [ ] coding, logging standards
+- [ ] expxandable project structure
+- [ ] CLI structure
+- [ ] configuration
+- [ ] recording
+- [ ] record exporting
+- [ ] processing into html/markdown
