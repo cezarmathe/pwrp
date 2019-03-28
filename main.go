@@ -19,9 +19,13 @@
 package main
 
 import (
+	log "github.com/sirupsen/logrus"
+
 	"github.com/cezarmathe/pwrp/cmd"
 )
 
 func main() {
+	log.Debug("main(): ", "called")
 	cmd.Execute()
+	log.Debug("main(): ", "returned")
 }

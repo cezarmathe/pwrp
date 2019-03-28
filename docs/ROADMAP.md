@@ -3,7 +3,7 @@
 This document specifies my future plans with this project.
 
 - [ ] coding, logging standards
-- [ ] expxandable project structure
+- [ ] expandable project structure
 - [ ] CLI structure
 - [ ] configuration
 - [ ] recording
