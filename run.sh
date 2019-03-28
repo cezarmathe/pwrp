@@ -1,7 +1,7 @@
 #!/bin/bash
 
-docker build -t cezarmathe:pwrp .
+docker build -t pwrp .
 
-docker run cezarmathe:pwrp --env PWRP_DEBUG=$1
+docker run pwrp -e PWRP_DEBUG=$1
 
 
