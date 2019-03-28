@@ -1,5 +1,5 @@
 #!/bin/bash
 
-docker run pwrp
+docker run --tty pwrp
 
 

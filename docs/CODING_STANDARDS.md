@@ -80,17 +80,17 @@ func (recorder *Recorder) Record() bool {
     
     - Warn level
     
-    Warn level should use `.WithError(err)` is there is an error that can be handled or should be ignored.
+    Warn level should use `.WithError(err)` if there is an error that can be handled or should be ignored.
     
     ```go
     log.WithError(err).Warn("encountered an error when doing something")
     ```
     
-    - Error level
+    - Fatal level
         
-    Error level should use `.WithError(err)` is there is an error that cannot be ignored.
+    Fatal level should use `.WithError(err)` if there is an error that cannot be ignored.
         
     ```go
-    log.WithError(err).Error("encountered an error when doing something")
+    log.WithError(err).Fatal("encountered an error when doing something")
     ```
     

@@ -25,7 +25,9 @@ import (
 )
 
 func main() {
-	log.Debug("main(): ", "called")
+	log.SetReportCaller(true)
+	log.Debug("called")
+	defer log.Debug("returned")
+	log.SetReportCaller(false)
 	cmd.Execute()
-	log.Debug("main(): ", "returned")
 }
