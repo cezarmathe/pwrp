@@ -19,7 +19,7 @@ func function() {
 }
 ```
 
-- Logging
+- Logging in general
 
 Functions that start other functions(or processes) should log the start & end events themselves, and delegate the rest of the logging to the called function.
 
@@ -50,3 +50,47 @@ func (recorder *Recorder) Record() bool {
     return true
 }
 ```
+
+- Logging level standards
+
+    - Trace level
+    
+    Simple and straightforward verbose messages
+    
+    ```go
+    log.Trace("this is a trace message")
+    ```
+    
+    - Debug level
+    
+    Logging should report the caller
+    
+    ```go
+    log.SetReportCaller(true)
+    log.Debug("function called")
+    ```
+    
+    - Info level
+    
+    Meaningful messages that the end user should receive.
+    
+    ```go
+    log.Info("finished the process")
+    ```
+    
+    - Warn level
+    
+    Warn level should use `.WithError(err)` is there is an error that can be handled or should be ignored.
+    
+    ```go
+    log.WithError(err).Warn("encountered an error when doing something")
+    ```
+    
+    - Error level
+        
+    Error level should use `.WithError(err)` is there is an error that cannot be ignored.
+        
+    ```go
+    log.WithError(err).Error("encountered an error when doing something")
+    ```
+    
