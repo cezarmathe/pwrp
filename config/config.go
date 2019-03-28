@@ -21,9 +21,10 @@ package config
 import (
 	"os"
 
-	"github.com/cezarmathe/pwrp/recording"
 	"github.com/phayes/permbits"
 	log "github.com/sirupsen/logrus"
+
+	"github.com/cezarmathe/pwrp/recording"
 )
 
 /*Config is a container for the entire utility configuration*/
