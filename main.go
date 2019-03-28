@@ -28,6 +28,4 @@ func main() {
 	log.Debug("main(): ", "called")
 	cmd.Execute()
 	log.Debug("main(): ", "returned")
-
-
 }

@@ -1,0 +1,16 @@
+# An example indexing configuration file
+
+storage_path = "/data"
+
+# Recording-related configs
+[recording]
+repositories = [
+    "github.com/cezarmathe/test.git"
+]
+protocol = "git"
+
+    [recording.skips]
+    missing_branch = false
+    bad_url = false
+    bad_protocol = false
+    all = false
