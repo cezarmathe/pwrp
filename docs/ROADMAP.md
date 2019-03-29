@@ -2,9 +2,9 @@
 
 This document specifies my future plans with this project.
 
-- [ ] coding, logging standards
-- [ ] expandable project structure
-- [ ] CLI structure
+- [x] coding, logging standards
+- [x] expandable project structure
+- [x] CLI structure
 - [ ] configuration
 - [ ] recording
 - [ ] record exporting
