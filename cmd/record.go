@@ -42,9 +42,11 @@ func initializeRecorder() {
 }
 
 func runRecordCmd(cmd *cobra.Command, args []string) {
-	log.DebugFunctionCalled(cmd, args)
+	log.DebugFunctionCalled(*cmd, args)
 	defer log.DebugFunctionReturned()
 
-	// initializeRecorder()
-	// recorder.Record()
+	log.Trace("initializing the recorder")
+	initializeRecorder()
+	log.Info("starting the recording process")
+	recorder.Record()
 }

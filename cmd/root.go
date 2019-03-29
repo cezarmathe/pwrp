@@ -60,16 +60,15 @@ func Execute() {
 }
 
 func runRootCmd(cmd *cobra.Command, args []string) {
-	log.DebugFunctionCalled(cmd, args)
+	log.DebugFunctionCalled(*cmd, args)
 	defer log.DebugFunctionReturned()
 
-	// // FIXME 29/03 cezarmathe: if the configuration failed to load, do not continue
-	// log.Trace("initializing the recorder")
-	// initializeRecorder()
-	//
-	// log.Info("starting the recording process")
-	// if success := recorder.Record(); success == false {
-	// 	log.Fatal("cannot continue due to recording failure")
-	// }
-	// log.Info("recording was successful")
+	log.Trace("initializing the recorder")
+	initializeRecorder()
+
+	log.Info("starting the recording process")
+	if success := recorder.Record(); success == false {
+		log.Fatal("cannot continue due to recording failure")
+	}
+	log.Info("recording was successful")
 }

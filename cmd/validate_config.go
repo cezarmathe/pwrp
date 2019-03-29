@@ -33,9 +33,10 @@ var (
 )
 
 func runValidateConfigCmd(cmd *cobra.Command, args []string) {
-	log.DebugFunctionCalled(cmd, args)
+	log.DebugFunctionCalled(*cmd, args)
 	defer log.DebugFunctionReturned()
 
 	cfg.InitLogging(log.GetParams())
+	log.Info("running the validate config command")
 	cfg.ValidateConfig(config)
 }

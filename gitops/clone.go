@@ -26,6 +26,7 @@ import (
 
 /*Clone clones a repository in a given path with specifically-selected options.*/
 func Clone(repositoryURL, storagePath string) (*git.Repository, error) {
+	// FIXME 29/03 cezarmathe: check code
 	log.DebugFunctionCalled(repositoryURL, storagePath)
 
 	urlEndpoints := strings.Split(repositoryURL, "/")
@@ -39,6 +40,6 @@ func Clone(repositoryURL, storagePath string) (*git.Repository, error) {
 		URL:   repositoryURL,
 		Depth: 1,
 	})
-	log.DebugFunctionReturned(gitRepo, err)
+	log.DebugFunctionReturned(*gitRepo, err)
 	return gitRepo, err
 }

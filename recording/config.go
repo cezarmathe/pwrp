@@ -40,46 +40,48 @@ type Config struct {
 
 /*NewDummyConfig creates a new dummy configuration file*/
 func NewDummyConfig() *Config {
-	log.Debug("creating new dummy recording config")
-	return &Config{
+	log.DebugFunctionCalled()
+	config := &Config{
 		Repositories: []string{},
 		Protocol:     gitops.GIT,
 		StoragePath:  "/home/username/.local/share/pwrp-storage",
 	}
+	log.DebugFunctionReturned(*config)
+	return config
 }
 
 /*ValidateConfig checks the configuration and validates its integrity*/
 func (recorder *Recorder) ValidateConfig() bool {
-	log.Trace("recorder.ValidateConfig(): ", "called with ", recorder.Config)
-	log.Info("recording config validation: ", "started")
+	log.DebugFunctionCalled()
+	log.Info("started recording config validation")
 
-	shouldContinue := true
+	configIsValid := true
 
 	/*checking if any repositories were provided*/
-	log.Debug("repository list validation: ", "checking")
+	log.Trace("checking if any repositories were provided")
 	if len(recorder.Config.Repositories) == 0 {
-		log.Trace("recorder.ValidateConfig(): ", "repository list is empty")
-		checkConfigError(false, &shouldContinue, ErrNoRepositories)
-		shouldContinue = false
+		checkConfigError(false, &configIsValid, ErrNoRepositories)
+		configIsValid = false
+	} else {
+		log.Trace("repository list is not empty")
 	}
-	log.Trace("recorder.ValidateConfig(): ", "repository list is not empty")
 
 	/*checking if the protocol is good*/
-	log.Debug("clone protocol validation: ", "checking")
+	log.Trace("checking cloning protocol")
 	if recorder.Config.Protocol == "" {
-		log.Debug("clone protocol validation: ", "setting default protocol")
-		recorder.Config.Protocol = gitops.GIT
+		log.Trace("using the default protocol")
+		recorder.Config.Protocol = gitops.DefaultProtocol
 	}
 	if !(recorder.Config.Protocol == gitops.GIT || recorder.Config.Protocol == gitops.HTTPS || recorder.Config.Protocol == gitops.SSH) {
-		log.Trace("recorder.ValidateConfig(): ", "protocol is bad")
-		checkConfigError(recorder.Config.Skips.BadProtocol, &shouldContinue, NewErrBadProtocol(recorder.Config.Protocol))
+		checkConfigError(recorder.Config.Skips.BadProtocol, &configIsValid, NewErrBadProtocol(recorder.Config.Protocol))
 	}
 
 	/*checking each repository's URL and protocol*/
-	log.Debug("validating repository URL's")
+	log.Trace("checking repository URL's")
 	for index := range recorder.Config.Repositories {
-		log.Debug("checking ", recorder.Config.Repositories[index])
-		// todo 14/03/2019: split url string by "://" and check the protocol
+		log.Trace("checking URL ", recorder.Config.Repositories[index])
+		// TODO 29/03 cezarmathe: split url string by "://" and check the protocol
+		// FIXME 29/03/2019 cezarmathe: implementation
 		/*check if it has a protocol and add it if it's missing*/
 		if !strings.HasPrefix(recorder.Config.Repositories[index], string(gitops.GIT)) || !strings.HasPrefix(recorder.Config.Repositories[index], string(gitops.SSH)) || !strings.HasPrefix(recorder.Config.Repositories[index], string(gitops.HTTPS)) {
 			recorder.Config.Repositories[index] = strings.Join([]string{
@@ -92,22 +94,24 @@ func (recorder *Recorder) ValidateConfig() bool {
 		/*checking if the url is valid*/
 		_, err := url.ParseRequestURI(recorder.Config.Repositories[index])
 		if err != nil {
-			checkConfigError(recorder.Config.Skips.BadURL, &shouldContinue, NewErrBadURL(recorder.Config.Repositories[index]))
+			checkConfigError(recorder.Config.Skips.BadURL, &configIsValid, NewErrBadURL(recorder.Config.Repositories[index]))
 		}
 	}
-	if shouldContinue {
+	if configIsValid {
 		log.Info("validated the recording configuration")
+	} else {
+		log.Warn("the recording configuration is invalid")
 	}
-	return shouldContinue
+	return configIsValid
 }
 
 /*checkConfigError checks a configuration error and, based on if it should be skipped or not,
 the error is logged to Warn or Error and the shouldContinue flag is set to false.*/
-func checkConfigError(shouldSkip bool, shouldContinue *bool, text error) {
+func checkConfigError(shouldSkip bool, configIsValid *bool, err error) {
 	if shouldSkip {
-		log.Warn(text)
+		log.WarnErr(err)
 		return
 	}
-	*shouldContinue = false
-	log.Error(text)
+	*configIsValid = false
+	log.ErrorErr(err)
 }
