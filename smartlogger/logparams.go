@@ -16,27 +16,18 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package cmd
+package smartlogger
 
-import (
-	"github.com/spf13/cobra"
+import "github.com/sirupsen/logrus"
 
-	cfg "github.com/cezarmathe/pwrp/config"
-)
+type LogParams struct {
+	Debug bool
+	Level logrus.Level
+}
 
-var (
-	validateConfigCmd = &cobra.Command{
-		Use:   "validate-config",
-		Short: "Validate the configuration file",
-		Run:   runValidateConfigCmd,
+func (log *SmartLogger) GetParams() LogParams {
+	return LogParams{
+		log.enableDebug,
+		log.logLevel,
 	}
-)
-
-func runValidateConfigCmd(cmd *cobra.Command, args []string) {
-	log.DebugFunctionCalled(*cmd, args)
-	defer log.DebugFunctionReturned()
-
-	cfg.InitLogging(log.GetParams())
-	log.Info("running the validate config command")
-	cfg.ValidateConfig(config)
 }

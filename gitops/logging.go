@@ -16,27 +16,20 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package cmd
+package gitops
 
 import (
-	"github.com/spf13/cobra"
+	"github.com/cezarmathe/pwrp/smartlogger"
+)
 
-	cfg "github.com/cezarmathe/pwrp/config"
+const (
+	TAG = "gitops"
 )
 
 var (
-	validateConfigCmd = &cobra.Command{
-		Use:   "validate-config",
-		Short: "Validate the configuration file",
-		Run:   runValidateConfigCmd,
-	}
+	log *smartlogger.SmartLogger
 )
 
-func runValidateConfigCmd(cmd *cobra.Command, args []string) {
-	log.DebugFunctionCalled(*cmd, args)
-	defer log.DebugFunctionReturned()
-
-	cfg.InitLogging(log.GetParams())
-	log.Info("running the validate config command")
-	cfg.ValidateConfig(config)
+func InitLogging(logParams smartlogger.LogParams) {
+	log = smartlogger.FromLogParams(logParams, TAG)
 }

@@ -98,7 +98,7 @@ func initConfig() {
 	}
 
 	/*load the configuration into the config object*/
-	log.Debug("loading the configuration into the config object")
+	log.Trace("loading the configuration into the config object")
 	if err := viper.Unmarshal(config); err != nil {
 		log.FatalErr(err, "failed to the decode the configuration file")
 	}

@@ -26,5 +26,5 @@ const (
 	HTTPS           Protocol = "https"
 	SSH             Protocol = "ssh"
 	GIT             Protocol = "git"
-	DefaultProtocol Protocol = GIT
+	DefaultProtocol          = GIT
 )

@@ -18,21 +18,14 @@
 
 package recording
 
-import (
-	"github.com/cezarmathe/pwrp/gitops"
-	log "github.com/sirupsen/logrus"
-)
-
 /*Recorder is a struct that does the recording process.*/
 type Recorder struct {
 	Config *Config
-
-	logger *log.Logger
 }
 
 /*NewRecorder creates a new Recorder with the specified configuration.*/
-func NewRecorder(config *Config, logger *log.Logger) *Recorder {
-	return &Recorder{config, logger}
+func NewRecorder(config *Config) *Recorder {
+	return &Recorder{config}
 }
 
 func (recorder *Recorder) checkIfShouldSkip(shouldSkip bool) bool {
@@ -41,20 +34,30 @@ func (recorder *Recorder) checkIfShouldSkip(shouldSkip bool) bool {
 
 /*Record starts the recording process.*/
 func (recorder *Recorder) Record() bool {
-	log.Debug("recorder.Record(): ", "called")
-	log.Info("recording: ", "started")
+	log.DebugFunctionCalled()
+	log.Info("recording process started")
 
-	log.Debug("recorder.Record(): ", "starting iteration over repository list")
-	for _, repositoryURL := range recorder.Config.Repositories {
-		repository, err := gitops.Clone(repositoryURL, recorder.Config.StoragePath)
-		if err != nil {
-			log.Fatal("recording: ", "fatal error encountered when cloning - ", err)
-			return false
-		}
-		log.Info("recording: ", "repository "+repositoryURL+"cloned successfully")
+	var shouldContinue = true
 
-		_, err = repository.Branch("_pwrp")
-
-	}
-	return true
+	// log.Debug("initializing gitops logging")
+	// gitops.InitLogging(log.GetParams())
+	//
+	// log.Trace("iterating over repository list")
+	// for index, repositoryURL := range recorder.Config.Repositories {
+	// 	log.Trace("iterating over index " + string(index) + " with URL " + repositoryURL)
+	// 	repository, err := gitops.Clone(repositoryURL, recorder.Config.StoragePath)
+	// 	if err != nil {
+	// 		log.ErrorErr(err, "error encountered when cloning the repository "+repositoryURL)
+	// 		shouldContinue = false
+	// 		break
+	// 	}
+	// 	log.Info("repository " + repositoryURL + "cloned successfully")
+	//
+	// 	_, err = repository.Branch("_pwrp")
+	//
+	// }
+	// log.Trace("finished iterating over repository list")
+	log.Info("recording process finished")
+	log.DebugFunctionReturned(shouldContinue)
+	return shouldContinue
 }

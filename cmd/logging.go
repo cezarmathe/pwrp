@@ -19,24 +19,19 @@
 package cmd
 
 import (
-	"github.com/spf13/cobra"
+	"github.com/sirupsen/logrus"
 
-	cfg "github.com/cezarmathe/pwrp/config"
+	"github.com/cezarmathe/pwrp/smartlogger"
+)
+
+const (
+	TAG = "config"
 )
 
 var (
-	validateConfigCmd = &cobra.Command{
-		Use:   "validate-config",
-		Short: "Validate the configuration file",
-		Run:   runValidateConfigCmd,
-	}
+	log *smartlogger.SmartLogger
 )
 
-func runValidateConfigCmd(cmd *cobra.Command, args []string) {
-	log.DebugFunctionCalled(*cmd, args)
-	defer log.DebugFunctionReturned()
-
-	cfg.InitLogging(log.GetParams())
-	log.Info("running the validate config command")
-	cfg.ValidateConfig(config)
+func initLogging(enableDebug bool, level logrus.Level) {
+	log = smartlogger.NewSmartLogger(enableDebug, level, TAG)
 }

@@ -110,7 +110,11 @@ func (log *SmartLogger) Warn(args ...interface{}) {
 
 /*WarnErr logs a message on the Warn level with the specified error*/
 func (log *SmartLogger) WarnErr(err error, args ...interface{}) {
-	log.getEntry(false).WithError(err).Warn(args...)
+	if len(args) > 0 {
+		log.getEntry(false).WithError(err).Warn(args...)
+	} else {
+		log.getEntry(false).Warn(err)
+	}
 }
 
 /*Error logs a message on the Error level*/
@@ -120,7 +124,11 @@ func (log *SmartLogger) Error(args ...interface{}) {
 
 /*ErrorErr logs a message on the Error level with the specified error*/
 func (log *SmartLogger) ErrorErr(err error, args ...interface{}) {
-	log.getEntry(false).WithError(err).Error(args...)
+	if len(args) > 0 {
+		log.getEntry(false).WithError(err).Error(args...)
+	} else {
+		log.getEntry(false).Error(err)
+	}
 }
 
 /*Fatal logs a message on the Fatal level*/
@@ -130,7 +138,11 @@ func (log *SmartLogger) Fatal(args ...interface{}) {
 
 /*FatalErr logs a message on the Fatal level with the specified error*/
 func (log *SmartLogger) FatalErr(err error, args ...interface{}) {
-	log.getEntry(false).WithError(err).Fatal(args...)
+	if len(args) > 0 {
+		log.getEntry(false).WithError(err).Fatal(args...)
+	} else {
+		log.getEntry(false).Fatal(err)
+	}
 }
 
 /*

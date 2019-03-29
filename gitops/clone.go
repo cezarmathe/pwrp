@@ -21,13 +21,13 @@ package gitops
 import (
 	"strings"
 
-	log "github.com/sirupsen/logrus"
 	"gopkg.in/src-d/go-git.v4"
 )
 
 /*Clone clones a repository in a given path with specifically-selected options.*/
 func Clone(repositoryURL, storagePath string) (*git.Repository, error) {
-	log.Debug("clone(): ", "called")
+	// FIXME 29/03 cezarmathe: check code
+	log.DebugFunctionCalled(repositoryURL, storagePath)
 
 	urlEndpoints := strings.Split(repositoryURL, "/")
 	repositoryName := urlEndpoints[len(urlEndpoints)-1]
@@ -35,8 +35,11 @@ func Clone(repositoryURL, storagePath string) (*git.Repository, error) {
 		strings.TrimSuffix(repositoryName, ".git")
 	}
 	storagePath += "/" + repositoryName
-	return git.PlainClone(storagePath, false, &git.CloneOptions{
+
+	gitRepo, err := git.PlainClone(storagePath, false, &git.CloneOptions{
 		URL:   repositoryURL,
 		Depth: 1,
 	})
+	log.DebugFunctionReturned(*gitRepo, err)
+	return gitRepo, err
 }

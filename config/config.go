@@ -21,14 +21,9 @@ package config
 import (
 	"os"
 
-	"github.com/cezarmathe/pwrp/smartlogger"
 	"github.com/phayes/permbits"
 
 	"github.com/cezarmathe/pwrp/recording"
-)
-
-var (
-	log *smartlogger.SmartLogger
 )
 
 /*Config is a container for the entire utility configuration*/
@@ -39,50 +34,62 @@ type Config struct {
 
 /*ValidateConfig validates the configuration*/
 func ValidateConfig(config *Config) bool {
-	log.Debug("called")
+	log.DebugFunctionCalled(config)
 
-	shouldContinue := true
+	var shouldContinue = true
 
 	/*checking if the storage path is valid and has proper permissions*/
-	log.Debug("storage path validation: ", "checking")
+	log.Trace("checking if the storage path is valid and has proper permissions")
 	if _, pathErr := os.Stat(config.StoragePath); pathErr != nil {
+		log.WarnErr(pathErr)
+
 		/*check if the directory exists and create it if it doesn't*/
-		log.Trace("ValidateConfig(): ", "checking if path exists")
+		log.Trace("checking if the path exists")
 		if os.IsNotExist(pathErr) {
-			log.Info("storage path validation: ", "storage path does not exist, attempting to create it")
+			log.Warn("storage path does not exist, attempting to create it")
+
 			var permissions permbits.PermissionBits
+
 			permissions = 0
 			permissions += permbits.UserRead + permbits.UserWrite + permbits.UserExecute
 			permissions += permbits.GroupRead + permbits.GroupExecute
 			permissions += permbits.OtherRead
+
 			fileMode := new(os.FileMode)
 			permbits.UpdateFileMode(fileMode, permissions)
-			log.Trace("ValidateConfig(): ", "creating storage directory")
+
+			log.Trace("creating storage directory")
 			err := os.Mkdir(config.StoragePath, *fileMode)
 			if err != nil {
-				log.Debug("storage path validation: ", "failed to create storage directory")
-				log.Error("storage path validation: ", NewErrCreateStorageDir(config.StoragePath).Error())
+				log.ErrorErr(NewErrCreateStorageDir(config.StoragePath), "storage path validation failed")
 				shouldContinue = false
 			} else {
-				log.Info("storage path validation: ", "created storage directory at "+config.StoragePath)
+				log.Info("created storage directory at " + config.StoragePath)
 			}
 		} else { /*another error*/
-			log.Error("storage path validation: ", "unknown error - ", pathErr.Error())
-			shouldContinue = false
-		}
-	}
-	if permissions, err := permbits.Stat(config.StoragePath); err == nil {
-		/*check if the directory has the proper permissions*/
-		log.Debug("storage path validation: ", "checking directory permissions")
-		if !permissions.UserExecute() || !permissions.UserRead() || !permissions.UserWrite() {
-			log.Error("storage path validation: ", NewErrNoPermissions(config.StoragePath).Error())
+			log.ErrorErr(pathErr, "unknown error")
 			shouldContinue = false
 		}
 	} else {
-		log.Error("storage path validation: ", "unknown error - ", err.Error())
+		log.Trace("storage path exists")
 	}
 
-	shouldContinue = recording.NewRecorder(config.Recording, nil).ValidateConfig() && shouldContinue
-	log.Trace("ValidateConfig(): ", "returned")
+	/*check if the directory has the proper permissions*/
+	log.Trace("checking if the storage directory has the proper permissions")
+	if permissions, err := permbits.Stat(config.StoragePath); err == nil {
+		if !permissions.UserExecute() || !permissions.UserRead() || !permissions.UserWrite() {
+			log.ErrorErr(NewErrNoPermissions(config.StoragePath))
+			shouldContinue = false
+		}
+	} else {
+		log.ErrorErr(err, "unknown error")
+	}
+
+	/*running the recording validation*/
+	log.Trace("running the recorder validation")
+	recording.InitLogging(log.GetParams())
+	shouldContinue = recording.NewRecorder(config.Recording).ValidateConfig() && shouldContinue
+
+	log.DebugFunctionReturned(shouldContinue)
 	return shouldContinue
 }
