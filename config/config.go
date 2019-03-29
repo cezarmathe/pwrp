@@ -21,10 +21,14 @@ package config
 import (
 	"os"
 
+	"github.com/cezarmathe/pwrp/smartlogger"
 	"github.com/phayes/permbits"
-	log "github.com/sirupsen/logrus"
 
 	"github.com/cezarmathe/pwrp/recording"
+)
+
+var (
+	log *smartlogger.SmartLogger
 )
 
 /*Config is a container for the entire utility configuration*/
@@ -35,7 +39,7 @@ type Config struct {
 
 /*ValidateConfig validates the configuration*/
 func ValidateConfig(config *Config) bool {
-	log.Trace("ValidateConfig(): ", "called")
+	log.Debug("called")
 
 	shouldContinue := true
 
