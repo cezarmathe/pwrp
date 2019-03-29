@@ -61,13 +61,13 @@ func ValidateConfig(config *Config) bool {
 			err := os.Mkdir(config.StoragePath, *fileMode)
 			if err != nil {
 				log.Debug("storage path validation: ", "failed to create storage directory")
-				log.Error("storage path validation: ", NewErrCreateStorageDir(config.StoragePath))
+				log.Error("storage path validation: ", NewErrCreateStorageDir(config.StoragePath).Error())
 				shouldContinue = false
 			} else {
 				log.Info("storage path validation: ", "created storage directory at "+config.StoragePath)
 			}
 		} else { /*another error*/
-			log.Error("storage path validation: ", "unknown error - ", pathErr)
+			log.Error("storage path validation: ", "unknown error - ", pathErr.Error())
 			shouldContinue = false
 		}
 	}
@@ -75,11 +75,11 @@ func ValidateConfig(config *Config) bool {
 		/*check if the directory has the proper permissions*/
 		log.Debug("storage path validation: ", "checking directory permissions")
 		if !permissions.UserExecute() || !permissions.UserRead() || !permissions.UserWrite() {
-			log.Error("storage path validation: ", NewErrNoPermissions(config.StoragePath))
+			log.Error("storage path validation: ", NewErrNoPermissions(config.StoragePath).Error())
 			shouldContinue = false
 		}
 	} else {
-		log.Error("storage path validation: ", "unknown error - ", err)
+		log.Error("storage path validation: ", "unknown error - ", err.Error())
 	}
 
 	shouldContinue = recording.NewRecorder(config.Recording, nil).ValidateConfig() && shouldContinue

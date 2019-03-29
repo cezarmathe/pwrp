@@ -50,8 +50,8 @@ func (log *SmartLogger) getEntry(debug bool) *logrus.Entry {
 }
 
 /*Trace logs a message on the Trace level*/
-func (log *SmartLogger) Trace(args ...string) {
-	log.getEntry(false).Trace(strings.Join(args, " "))
+func (log *SmartLogger) Trace(args ...interface{}) {
+	log.getEntry(false).Trace(args...)
 }
 
 /*Debug logs a message on the Debug level is debug logging is enabled*/
@@ -64,29 +64,73 @@ func (log *SmartLogger) Debug(args ...string) {
 	}).Debug(name, "(): ", strings.Join(args, " "))
 }
 
+/*DebugFunctionCalled logs a message on Debug level stating that the calling function was called.*/
+func (log *SmartLogger) DebugFunctionCalled(params ...interface{}) {
+	pc, file, line, _ := runtime.Caller(1)
+	name := runtime.FuncForPC(pc).Name()
+
+	entry := log.getEntry(true).WithFields(logrus.Fields{
+		"file": file,
+		"line": line,
+	})
+
+	if len(params) > 0 {
+		entry.Debug(name, "(): ", "called with ", params)
+	} else {
+		entry.Debug(name, "(): ", "called")
+	}
+}
+
+/*DebugFunctionCalled logs a message on Debug level stating that the calling function returned.*/
+func (log *SmartLogger) DebugFunctionReturned(returnValues ...interface{}) {
+	pc, file, line, _ := runtime.Caller(1)
+	name := runtime.FuncForPC(pc).Name()
+
+	entry := log.getEntry(true).WithFields(logrus.Fields{
+		"file": file,
+		"line": line,
+	})
+
+	if len(returnValues) > 0 {
+		entry.Debug(name, "(): ", "returned ", returnValues)
+	} else {
+		entry.Debug(name, "(): ", "returned")
+	}
+}
+
 /*Info logs a message on the Info level*/
-func (log *SmartLogger) Info(args ...string) {
-	log.getEntry(false).Info(strings.Join(args, " "))
+func (log *SmartLogger) Info(args ...interface{}) {
+	log.getEntry(false).Info(args...)
 }
 
 /*Warn logs a message on the Warn level*/
-func (log *SmartLogger) Warn(args ...string) {
-	log.getEntry(false).Warn(strings.Join(args, " "))
+func (log *SmartLogger) Warn(args ...interface{}) {
+	log.getEntry(false).Warn(args...)
 }
 
 /*WarnErr logs a message on the Warn level with the specified error*/
-func (log *SmartLogger) WarnErr(err error, args ...string) {
-	log.getEntry(false).WithError(err).Warn(strings.Join(args, " "))
+func (log *SmartLogger) WarnErr(err error, args ...interface{}) {
+	log.getEntry(false).WithError(err).Warn(args...)
 }
 
-/*Fatallogs a message on the Fatal level*/
-func (log *SmartLogger) Fatal(args ...string) {
-	log.getEntry(false).Fatal(strings.Join(args, " "))
+/*Error logs a message on the Error level*/
+func (log *SmartLogger) Error(args ...interface{}) {
+	log.getEntry(false).Error(args...)
+}
+
+/*ErrorErr logs a message on the Error level with the specified error*/
+func (log *SmartLogger) ErrorErr(err error, args ...interface{}) {
+	log.getEntry(false).WithError(err).Error(args...)
+}
+
+/*Fatal logs a message on the Fatal level*/
+func (log *SmartLogger) Fatal(args ...interface{}) {
+	log.getEntry(false).Fatal(args...)
 }
 
 /*FatalErr logs a message on the Fatal level with the specified error*/
-func (log *SmartLogger) FatalErr(err error, args ...string) {
-	log.getEntry(false).WithError(err).Fatal(strings.Join(args, " "))
+func (log *SmartLogger) FatalErr(err error, args ...interface{}) {
+	log.getEntry(false).WithError(err).Fatal(args...)
 }
 
 /*

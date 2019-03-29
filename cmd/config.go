@@ -40,8 +40,8 @@ func init() {
 
 /*initConfig reads in config file and ENV variables if set.*/
 func initConfig() {
-	log.Debug("called")
-	defer log.Debug("returned")
+	log.DebugFunctionCalled()
+	defer log.DebugFunctionReturned()
 
 	/*flag configurations*/
 	err := viper.BindPFlag("verbose", rootCmd.Flags().Lookup("verbose"))
