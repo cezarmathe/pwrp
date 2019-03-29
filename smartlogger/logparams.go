@@ -28,6 +28,6 @@ type LogParams struct {
 func (log *SmartLogger) GetParams() LogParams {
 	return LogParams{
 		log.enableDebug,
-		*log.logLevel,
+		log.logLevel,
 	}
 }
