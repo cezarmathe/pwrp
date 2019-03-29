@@ -59,7 +59,7 @@ func ValidateConfig(config *Config) bool {
 			permbits.UpdateFileMode(fileMode, permissions)
 
 			log.Trace("creating storage directory")
-			err := os.Mkdir(config.StoragePath, *fileMode)
+			err := os.MkdirAll(config.StoragePath, *fileMode)
 			if err != nil {
 				log.ErrorErr(NewErrCreateStorageDir(config.StoragePath), "storage path validation failed")
 				shouldContinue = false

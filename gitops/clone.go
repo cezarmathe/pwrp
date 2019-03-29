@@ -26,15 +26,17 @@ import (
 
 /*Clone clones a repository in a given path with specifically-selected options.*/
 func Clone(repositoryURL, storagePath string) (*git.Repository, error) {
-	// FIXME 29/03 cezarmathe: check code
 	log.DebugFunctionCalled(repositoryURL, storagePath)
 
+	log.Trace("extract repository name from ", repositoryURL)
 	urlEndpoints := strings.Split(repositoryURL, "/")
 	repositoryName := urlEndpoints[len(urlEndpoints)-1]
-	if strings.HasSuffix(repositoryName, ".git") {
-		strings.TrimSuffix(repositoryName, ".git")
-	}
+	// if strings.HasSuffix(repositoryName, ".git") {
+	// 	strings.TrimSuffix(repositoryName, ".git")
+	// }
 	storagePath += "/" + repositoryName
+
+	log.Trace("repository storage path: ", storagePath)
 
 	gitRepo, err := git.PlainClone(storagePath, false, &git.CloneOptions{
 		URL:   repositoryURL,

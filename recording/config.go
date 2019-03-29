@@ -79,20 +79,24 @@ func (recorder *Recorder) ValidateConfig() bool {
 	/*checking each repository's URL and protocol*/
 	log.Trace("checking repository URL's")
 	for index := range recorder.Config.Repositories {
-		log.Trace("checking URL ", recorder.Config.Repositories[index])
-		// TODO 29/03 cezarmathe: split url string by "://" and check the protocol
-		// FIXME 29/03/2019 cezarmathe: implementation
-		/*check if it has a protocol and add it if it's missing*/
-		if !strings.HasPrefix(recorder.Config.Repositories[index], string(gitops.GIT)) || !strings.HasPrefix(recorder.Config.Repositories[index], string(gitops.SSH)) || !strings.HasPrefix(recorder.Config.Repositories[index], string(gitops.HTTPS)) {
-			recorder.Config.Repositories[index] = strings.Join([]string{
-				string(recorder.Config.Protocol),
-				"://",
-				recorder.Config.Repositories[index],
-			}, "")
+		repoUrl := &recorder.Config.Repositories[index]
+		log.Trace("checking URL ", *repoUrl)
+
+		/*check if the URL has a protocol*/
+		splitUrl := strings.Split(*repoUrl, "://")
+		if len(splitUrl) == 1 {
+			log.Trace("URL ", *repoUrl, " has no protocol, adding the default protocol ", gitops.DefaultProtocol)
+			*repoUrl = strings.Join([]string{string(gitops.DefaultProtocol), "://", *repoUrl}, "")
+			splitUrl = strings.Split(*repoUrl, "://")
+
+		} else if urlHasProtocol(*repoUrl, gitops.GIT) || urlHasProtocol(*repoUrl, gitops.SSH) || urlHasProtocol(*repoUrl, gitops.HTTPS) {
+			log.Trace("the url ", *repoUrl, " has a valid protocol")
+		} else {
+			checkConfigError(recorder.Config.Skips.BadProtocol, &configIsValid, NewErrBadURL(*repoUrl))
 		}
 
-		/*checking if the url is valid*/
-		_, err := url.ParseRequestURI(recorder.Config.Repositories[index])
+		/*checking if the repoUrl is valid*/
+		_, err := url.ParseRequestURI(*repoUrl)
 		if err != nil {
 			checkConfigError(recorder.Config.Skips.BadURL, &configIsValid, NewErrBadURL(recorder.Config.Repositories[index]))
 		}
@@ -114,4 +118,9 @@ func checkConfigError(shouldSkip bool, configIsValid *bool, err error) {
 	}
 	*configIsValid = false
 	log.ErrorErr(err)
+}
+
+/*urlHasProtocol checks if the given URL has the given protocol*/
+func urlHasProtocol(url string, protocol gitops.Protocol) bool {
+	return strings.HasPrefix(url, string(protocol))
 }

@@ -50,8 +50,9 @@ func initConfig() {
 	}
 
 	/*env configurations*/
-	viper.SetEnvPrefix("PWRP")
+	viper.SetEnvPrefix("pwrp")
 	err = viper.BindEnv("debug")
+	err = viper.BindEnv("verbose")
 	if err != nil {
 		log.FatalErr(err, "encountered an error when binding an environment variable")
 	}
@@ -68,11 +69,12 @@ func initConfig() {
 	if viper.GetBool("debug") {
 		log.EnableDebug(true)
 		log.Debug("debugging enabled")
+	} else {
+		log.EnableDebug(false)
 	}
 
 	/*find home directory.*/
 	log.Trace("finding home directory")
-
 	home, err := homedir.Dir()
 	if err != nil {
 		log.FatalErr(err, "encountered an error when trying to find the home directory")
@@ -104,5 +106,13 @@ func initConfig() {
 	}
 
 	/*setting configuration defaults*/
-	config.StoragePath = home + "/.local/share/pwrp"
+	log.Trace("setting configuration defaults")
+	setDefault(&config.StoragePath, home+"/.local/share/pwrp")
+}
+
+func setDefault(key *string, defaultValue string) {
+	if *key != "" {
+		return
+	}
+	*key = defaultValue
 }

@@ -18,6 +18,8 @@
 
 package recording
 
+import "github.com/cezarmathe/pwrp/gitops"
+
 /*Recorder is a struct that does the recording process.*/
 type Recorder struct {
 	Config *Config
@@ -39,24 +41,26 @@ func (recorder *Recorder) Record() bool {
 
 	var shouldContinue = true
 
-	// log.Debug("initializing gitops logging")
-	// gitops.InitLogging(log.GetParams())
-	//
-	// log.Trace("iterating over repository list")
-	// for index, repositoryURL := range recorder.Config.Repositories {
-	// 	log.Trace("iterating over index " + string(index) + " with URL " + repositoryURL)
-	// 	repository, err := gitops.Clone(repositoryURL, recorder.Config.StoragePath)
-	// 	if err != nil {
-	// 		log.ErrorErr(err, "error encountered when cloning the repository "+repositoryURL)
-	// 		shouldContinue = false
-	// 		break
-	// 	}
-	// 	log.Info("repository " + repositoryURL + "cloned successfully")
-	//
-	// 	_, err = repository.Branch("_pwrp")
-	//
-	// }
-	// log.Trace("finished iterating over repository list")
+	log.Debug("initializing gitops logging")
+	gitops.InitLogging(log.GetParams())
+
+	log.Trace("storage path: ", recorder.Config.StoragePath)
+
+	log.Trace("iterating over repository list")
+	for _, repositoryURL := range recorder.Config.Repositories {
+		log.Trace("operating on URL ", repositoryURL)
+		repository, err := gitops.Clone(repositoryURL, recorder.Config.StoragePath)
+		if err != nil {
+			log.ErrorErr(err, "error encountered when cloning the repository ", repositoryURL)
+			shouldContinue = false
+			break
+		}
+		log.Info("repository ", repositoryURL, " cloned successfully")
+
+		_, err = repository.Branch("_pwrp")
+
+	}
+	log.Trace("finished iterating over repository list")
 	log.Info("recording process finished")
 	log.DebugFunctionReturned(shouldContinue)
 	return shouldContinue

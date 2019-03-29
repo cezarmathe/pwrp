@@ -56,6 +56,10 @@ func (log *SmartLogger) Trace(args ...interface{}) {
 
 /*Debug logs a message on the Debug level is debug logging is enabled*/
 func (log *SmartLogger) Debug(args ...string) {
+	if !log.enableDebug {
+		return
+	}
+
 	pc, file, line, _ := runtime.Caller(1)
 	name := runtime.FuncForPC(pc).Name()
 	log.getEntry(true).WithFields(logrus.Fields{
@@ -66,6 +70,10 @@ func (log *SmartLogger) Debug(args ...string) {
 
 /*DebugFunctionCalled logs a message on Debug level stating that the calling function was called.*/
 func (log *SmartLogger) DebugFunctionCalled(params ...interface{}) {
+	if !log.enableDebug {
+		return
+	}
+
 	pc, file, line, _ := runtime.Caller(1)
 	name := runtime.FuncForPC(pc).Name()
 
@@ -83,6 +91,10 @@ func (log *SmartLogger) DebugFunctionCalled(params ...interface{}) {
 
 /*DebugFunctionCalled logs a message on Debug level stating that the calling function returned.*/
 func (log *SmartLogger) DebugFunctionReturned(returnValues ...interface{}) {
+	if !log.enableDebug {
+		return
+	}
+
 	pc, file, line, _ := runtime.Caller(1)
 	name := runtime.FuncForPC(pc).Name()
 
