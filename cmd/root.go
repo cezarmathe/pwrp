@@ -39,24 +39,22 @@ var (
 )
 
 func init() {
-	log = smartlogger.NewSmartLogger()
-	logrus.Trace("cmd.init(): ", "called")
-	logrus.Debug("cmd init: ", "initializing")
+	log = smartlogger.NewSmartLogger(false, logrus.InfoLevel)
+
+	/*Run the cobra initialization process*/
 	cobra.OnInitialize(initConfig)
 
 	/*Persistent flags*/
-	rootCmd.PersistentFlags().StringVarP(&configFileName, "config", "c", "", "config file (default is $HOME/.config/pwrp.toml)")
+	rootCmd.PersistentFlags().StringVarP(&configFilePath, "config", "c", "", "config file (default is $HOME/.config/pwrp.toml)")
 	rootCmd.PersistentFlags().BoolP("verbose", "v", false, "verbose level logging")
-
-	logrus.Trace("cmd.init(): ", "returned")
 }
 
 /*Execute adds all child commands to the root command and sets flags appropriately.
 This is called by main.main(). It only needs to happen once to the rootCmd.*/
 func Execute() {
-	logrus.Trace("cmd.Execute(): ", "called")
+	log.Debug("called")
 
-	logrus.Debug("execute root command: ", "adding commands")
+	log.Debug("adding additional commands to the root command")
 	rootCmd.AddCommand(validateConfigCmd)
 	rootCmd.AddCommand(recordCmd)
 
@@ -65,19 +63,21 @@ func Execute() {
 		os.Exit(1)
 	}
 
-	logrus.Trace("cmd.Execute(): ", "returned")
+	log.Debug("returned")
 }
 
 func runRootCmd(cmd *cobra.Command, args []string) {
-	logrus.Trace("runRootCmd(): ", "called")
+	log.Debug("called")
 
+	// FIXME 29/03 cezarmathe: if the configuration failed to load, do not continue
+	log.Trace("initializing the recorder")
 	initializeRecorder()
 
-	logrus.Debug("root cmd: ", "running recorder.Record()")
+	log.Info("starting the recording process")
 	if success := recorder.Record(); success == false {
-		logrus.Fatal("recorder reported cannot continue")
+		log.Fatal("cannot continue due to recording failure")
 	}
-	logrus.Info("recorder reported can continue")
+	log.Info("recording was successful")
 
-	logrus.Trace("runRootCmd(): ", "returned")
+	log.Debug("returned")
 }

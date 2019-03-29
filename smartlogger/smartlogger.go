@@ -37,10 +37,17 @@ func NewSmartLogger(enableDebug bool, level logrus.Level) *SmartLogger {
 	smartLogger.logger = logrus.New()
 	smartLogger.logger.SetLevel(level)
 
-	if enableDebug {
-		smartLogger.debugLogger = logrus.New()
-		smartLogger.debugLogger.SetReportCaller(true)
-	}
+	smartLogger.enableDebug = enableDebug
+	smartLogger.debugLogger = logrus.New()
+	smartLogger.debugLogger.SetReportCaller(true)
 
 	return smartLogger
+}
+
+func (log *SmartLogger) EnableDebug(enableDebug bool) {
+	log.enableDebug = enableDebug
+}
+
+func (log *SmartLogger) SetLevel(level logrus.Level) {
+	log.logger.SetLevel(level)
 }

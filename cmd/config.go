@@ -27,74 +27,81 @@ import (
 )
 
 var (
-	configFileName string
-	config         *cfg.Config
-	configIsLoaded bool
+	/*path to the configuration file*/
+	configFilePath string
+
+	/*the configuration object*/
+	config *cfg.Config
 )
 
 func init() {
 	config = new(cfg.Config)
-	configIsLoaded = false
 }
 
 /*initConfig reads in config file and ENV variables if set.*/
 func initConfig() {
-	logrus.Trace("initConfig(): ", "called")
+	/*flag configurations*/
+	err := viper.BindPFlag("verbose", rootCmd.Flags().Lookup("verbose"))
+	if err != nil {
+		log.FatalErr(err, "encountered an error when binding a flag")
+	}
 
-	/*Flag configurations*/
-	logrus.Trace("initConfig(): ", "setting viper flag bindings")
-	viper.BindPFlag("verbose", rootCmd.Flags().Lookup("verbose"))
+	/*env configurations*/
 	viper.SetEnvPrefix("PWRP")
-	viper.BindEnv("debug")
+	err = viper.BindEnv("debug")
+	if err != nil {
+		log.FatalErr(err, "encountered an error when binding an environment variable")
+	}
 
-	logrus.Trace("initConfig(): ", "reading environment variables")
-	viper.AutomaticEnv() /*read in environment variables that match*/
+	/*read in environment variables that match*/
+	viper.AutomaticEnv()
 
 	if viper.GetBool("verbose") {
-		logrus.SetLevel(logrus.TraceLevel)
-	} else if viper.GetBool("debug") {
-		logrus.SetLevel(logrus.DebugLevel)
+		log.SetLevel(logrus.TraceLevel)
+		log.Trace("verbose logging level")
 	} else {
-		logrus.SetLevel(logrus.InfoLevel)
+		log.SetLevel(logrus.InfoLevel)
 	}
-	logrus.Debug("logrus level: ", logrus.GetLevel())
+	if viper.GetBool("debug") {
+		log.EnableDebug(true)
+		log.Debug("debugging enabled")
+	}
 
-	/*Find home directory.*/
-	logrus.Trace("initConfig(): ", "finding home directory")
+	/*find home directory.*/
+	log.Trace("finding home directory")
 
 	home, err := homedir.Dir()
 	if err != nil {
-		logrus.Fatal(err)
+		log.Fatal(err)
 	}
 
-	/*Value defaults*/
-	logrus.Trace("initConfig(): ", "setting viper defaults")
-	viper.SetDefault("verbose", false)
-	viper.SetDefault("debug", false)
-
-	if configFileName != "" {
-		logrus.Debug("configuration file name: ", "using path from flag")
-		/*Use config file from the flag.*/
-		viper.SetConfigFile(configFileName)
+	log.Trace("finding the configuration file")
+	if configFilePath != "" {
+		/*use the configuration file passed by the flag*/
+		log.Trace("using the configuration file passed by flag")
+		viper.SetConfigFile(configFilePath)
 	} else {
-		logrus.Debug("configuration file name: ", "using default path")
-		/*Search config in config directory with name "pwrp.toml".*/
+		/*search config in config directory with name "pwrp.toml".*/
+		log.Trace("searching the configuration file in the default path")
 		viper.SetConfigFile(home + "/.config/pwrp.toml")
 	}
 
-	/*If a config file is found, read it in.*/
+	/*if a config file is found, read it in.*/
+	log.Trace("reading the configuration file")
 	if err := viper.ReadInConfig(); err == nil {
-		logrus.Debug("reading config file: ", "using "+viper.ConfigFileUsed())
+		log.Info("using " + viper.ConfigFileUsed() + " as the configuration file")
 	} else {
-		logrus.Warn("reading config file:", "failed reading "+viper.ConfigFileUsed())
+		log.FatalErr(err, "failed reading "+viper.ConfigFileUsed())
 	}
 
+	/*load the configuration into the config object*/
+	log.Debug("loading the configuration into the config object")
 	if err := viper.Unmarshal(config); err != nil {
-		logrus.Warn("decoding config file: ", "failed to decode - ", err)
+		log.Fatal(err, "failed to the decode the configuration file")
 	}
 
+	/*setting configuration defaults*/
 	config.StoragePath = home + "/.local/share/pwrp"
-	configIsLoaded = true
 
-	logrus.Trace("initConfig(): ", "finished")
+	log.Debug("returned")
 }

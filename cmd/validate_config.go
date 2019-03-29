@@ -20,7 +20,7 @@ package cmd
 
 import (
 	cfg "github.com/cezarmathe/pwrp/config"
-	log "github.com/sirupsen/logrus"
+	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
 
@@ -33,7 +33,7 @@ var (
 )
 
 func runValidateConfigCmd(cmd *cobra.Command, args []string) {
-	log.Trace("runValidateConfig(): ", "called")
+	logrus.Trace("runValidateConfig(): ", "called")
 	cfg.ValidateConfig(config)
-	log.Trace("runValidateConfig: ", "returned")
+	logrus.Trace("runValidateConfig: ", "returned")
 }
