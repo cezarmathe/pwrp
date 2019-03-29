@@ -29,7 +29,6 @@ import (
 type Config struct {
 	Repositories []string        `toml:"repositories"`
 	Protocol     gitops.Protocol `toml:"protocol"`
-	StoragePath  string
 	Skips        struct {
 		MissingBranch bool `toml:"missing_branch"`
 		BadURL        bool `toml:"bad_url"`
@@ -44,7 +43,6 @@ func NewDummyConfig() *Config {
 	config := &Config{
 		Repositories: []string{},
 		Protocol:     gitops.GIT,
-		StoragePath:  "/home/username/.local/share/pwrp-storage",
 	}
 	log.DebugFunctionReturned(*config)
 	return config

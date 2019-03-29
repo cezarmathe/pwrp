@@ -88,7 +88,7 @@ func ValidateConfig(config *Config) bool {
 	/*running the recording validation*/
 	log.Trace("running the recorder validation")
 	recording.InitLogging(log.GetParams())
-	shouldContinue = recording.NewRecorder(config.Recording).ValidateConfig() && shouldContinue
+	shouldContinue = recording.NewRecorder(config.Recording, "").ValidateConfig() && shouldContinue
 
 	log.DebugFunctionReturned(shouldContinue)
 	return shouldContinue

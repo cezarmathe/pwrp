@@ -22,12 +22,13 @@ import "github.com/cezarmathe/pwrp/gitops"
 
 /*Recorder is a struct that does the recording process.*/
 type Recorder struct {
-	Config *Config
+	Config      *Config
+	StoragePath string
 }
 
 /*NewRecorder creates a new Recorder with the specified configuration.*/
-func NewRecorder(config *Config) *Recorder {
-	return &Recorder{config}
+func NewRecorder(config *Config, storagePath string) *Recorder {
+	return &Recorder{config, storagePath}
 }
 
 func (recorder *Recorder) checkIfShouldSkip(shouldSkip bool) bool {
@@ -44,12 +45,12 @@ func (recorder *Recorder) Record() bool {
 	log.Debug("initializing gitops logging")
 	gitops.InitLogging(log.GetParams())
 
-	log.Trace("storage path: ", recorder.Config.StoragePath)
+	log.Trace("storage path: ", recorder.StoragePath)
 
 	log.Trace("iterating over repository list")
 	for _, repositoryURL := range recorder.Config.Repositories {
 		log.Trace("operating on URL ", repositoryURL)
-		repository, err := gitops.Clone(repositoryURL, recorder.Config.StoragePath)
+		repository, err := gitops.Clone(repositoryURL, recorder.StoragePath)
 		if err != nil {
 			log.ErrorErr(err, "error encountered when cloning the repository ", repositoryURL)
 			shouldContinue = false
