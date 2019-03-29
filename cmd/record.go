@@ -19,9 +19,10 @@
 package cmd
 
 import (
-	"github.com/cezarmathe/pwrp/recording"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
+
+	"github.com/cezarmathe/pwrp/recording"
 )
 
 var (
@@ -34,16 +35,17 @@ var (
 )
 
 func initializeRecorder() {
-	logrus.Trace("initializeRecorder(): ", "called")
-	logrus.Debug("recorder: ", "creating recorder")
+	log.Debug("called")
+	defer log.Debug("returned")
+
+	log.Debug("creating recorder")
 	recorder = recording.NewRecorder(config.Recording, logrus.New())
 }
 
 func runRecordCmd(cmd *cobra.Command, args []string) {
-	logrus.Trace("runRecordCmd(): ", "called")
+	log.Debug("called")
+	defer log.Debug("returned")
 
 	initializeRecorder()
 	recorder.Record()
-
-	logrus.Trace("runRecordCmd(): ", "returned")
 }

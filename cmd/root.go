@@ -53,6 +53,7 @@ func init() {
 This is called by main.main(). It only needs to happen once to the rootCmd.*/
 func Execute() {
 	log.Debug("called")
+	defer log.Debug("returned")
 
 	log.Debug("adding additional commands to the root command")
 	rootCmd.AddCommand(validateConfigCmd)
@@ -63,11 +64,11 @@ func Execute() {
 		os.Exit(1)
 	}
 
-	log.Debug("returned")
 }
 
 func runRootCmd(cmd *cobra.Command, args []string) {
 	log.Debug("called")
+	defer log.Debug("returned")
 
 	// FIXME 29/03 cezarmathe: if the configuration failed to load, do not continue
 	log.Trace("initializing the recorder")
@@ -78,6 +79,4 @@ func runRootCmd(cmd *cobra.Command, args []string) {
 		log.Fatal("cannot continue due to recording failure")
 	}
 	log.Info("recording was successful")
-
-	log.Debug("returned")
 }

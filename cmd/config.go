@@ -40,6 +40,9 @@ func init() {
 
 /*initConfig reads in config file and ENV variables if set.*/
 func initConfig() {
+	log.Debug("called")
+	defer log.Debug("returned")
+
 	/*flag configurations*/
 	err := viper.BindPFlag("verbose", rootCmd.Flags().Lookup("verbose"))
 	if err != nil {
@@ -102,6 +105,4 @@ func initConfig() {
 
 	/*setting configuration defaults*/
 	config.StoragePath = home + "/.local/share/pwrp"
-
-	log.Debug("returned")
 }
