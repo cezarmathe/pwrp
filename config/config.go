@@ -21,14 +21,9 @@ package config
 import (
 	"os"
 
-	"github.com/cezarmathe/pwrp/smartlogger"
 	"github.com/phayes/permbits"
 
 	"github.com/cezarmathe/pwrp/recording"
-)
-
-var (
-	log *smartlogger.SmartLogger
 )
 
 /*Config is a container for the entire utility configuration*/
@@ -39,7 +34,7 @@ type Config struct {
 
 /*ValidateConfig validates the configuration*/
 func ValidateConfig(config *Config) bool {
-	log.Debug("called")
+	log.DebugFunctionCalled(config)
 
 	shouldContinue := true
 
@@ -61,7 +56,7 @@ func ValidateConfig(config *Config) bool {
 			err := os.Mkdir(config.StoragePath, *fileMode)
 			if err != nil {
 				log.Debug("storage path validation: ", "failed to create storage directory")
-				log.Error("storage path validation: ", NewErrCreateStorageDir(config.StoragePath).Error())
+				log.Error("storage path validation: ", NewErrCreateStorageDir(config.StoragePath))
 				shouldContinue = false
 			} else {
 				log.Info("storage path validation: ", "created storage directory at "+config.StoragePath)
@@ -75,14 +70,16 @@ func ValidateConfig(config *Config) bool {
 		/*check if the directory has the proper permissions*/
 		log.Debug("storage path validation: ", "checking directory permissions")
 		if !permissions.UserExecute() || !permissions.UserRead() || !permissions.UserWrite() {
-			log.Error("storage path validation: ", NewErrNoPermissions(config.StoragePath).Error())
+			log.Error("storage path validation: ", NewErrNoPermissions(config.StoragePath))
 			shouldContinue = false
 		}
 	} else {
-		log.Error("storage path validation: ", "unknown error - ", err.Error())
+		log.Error("storage path validation: ", "unknown error - ", err)
 	}
 
+	/*running the recording validation*/
 	shouldContinue = recording.NewRecorder(config.Recording, nil).ValidateConfig() && shouldContinue
-	log.Trace("ValidateConfig(): ", "returned")
+
+	log.DebugFunctionReturned(shouldContinue)
 	return shouldContinue
 }

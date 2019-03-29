@@ -20,11 +20,9 @@ package recording
 
 import (
 	"net/url"
-
 	"strings"
 
 	"github.com/cezarmathe/pwrp/gitops"
-	log "github.com/sirupsen/logrus"
 )
 
 /*Config contains configurations for the recording process*/

@@ -20,19 +20,16 @@ package recording
 
 import (
 	"github.com/cezarmathe/pwrp/gitops"
-	log "github.com/sirupsen/logrus"
 )
 
 /*Recorder is a struct that does the recording process.*/
 type Recorder struct {
 	Config *Config
-
-	logger *log.Logger
 }
 
 /*NewRecorder creates a new Recorder with the specified configuration.*/
-func NewRecorder(config *Config, logger *log.Logger) *Recorder {
-	return &Recorder{config, logger}
+func NewRecorder(config *Config) *Recorder {
+	return &Recorder{config}
 }
 
 func (recorder *Recorder) checkIfShouldSkip(shouldSkip bool) bool {

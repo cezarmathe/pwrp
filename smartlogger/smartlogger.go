@@ -33,7 +33,7 @@ type SmartLogger struct {
 }
 
 /*NewSmartLogger creates a new SmartLogger*/
-func NewSmartLogger(enableDebug bool, level logrus.Level, defaultTag string) *SmartLogger {
+func NewSmartLogger(enableDebug bool, level logrus.Level, tag string) *SmartLogger {
 	smartLogger := new(SmartLogger)
 
 	smartLogger.logger = logrus.New()
@@ -44,7 +44,24 @@ func NewSmartLogger(enableDebug bool, level logrus.Level, defaultTag string) *Sm
 	smartLogger.debugLogger.SetLevel(logrus.DebugLevel)
 	smartLogger.debugLogger.SetReportCaller(false)
 
-	smartLogger.tag = defaultTag
+	smartLogger.tag = tag
+
+	return smartLogger
+}
+
+/*FromLogParams creates a new SmartLogger with the given parameters*/
+func FromLogParams(params LogParams, tag string) *SmartLogger {
+	smartLogger := new(SmartLogger)
+
+	smartLogger.logger = logrus.New()
+	smartLogger.logger.SetLevel(params.Level)
+
+	smartLogger.enableDebug = params.Debug
+	smartLogger.debugLogger = logrus.New()
+	smartLogger.debugLogger.SetLevel(logrus.DebugLevel)
+	smartLogger.debugLogger.SetReportCaller(false)
+
+	smartLogger.tag = tag
 
 	return smartLogger
 }

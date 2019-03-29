@@ -23,8 +23,6 @@ import (
 
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
-
-	"github.com/cezarmathe/pwrp/smartlogger"
 )
 
 /*The main command*/
@@ -34,12 +32,8 @@ var rootCmd = &cobra.Command{
 	Run:   runRootCmd,
 }
 
-var (
-	log *smartlogger.SmartLogger
-)
-
 func init() {
-	log = smartlogger.NewSmartLogger(false, logrus.InfoLevel, "cli")
+	initLogging(false, logrus.InfoLevel)
 
 	/*Run the cobra initialization process*/
 	cobra.OnInitialize(initConfig)

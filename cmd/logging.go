@@ -16,13 +16,22 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package gitops
+package cmd
 
-/*Protocol used for cloning*/
-type Protocol string
+import (
+	"github.com/sirupsen/logrus"
+
+	"github.com/cezarmathe/pwrp/smartlogger"
+)
 
 const (
-	HTTPS Protocol = "https"
-	SSH   Protocol = "ssh"
-	GIT   Protocol = "git"
+	TAG = "config"
 )
+
+var (
+	log *smartlogger.SmartLogger
+)
+
+func initLogging(enableDebug bool, level logrus.Level) {
+	log = smartlogger.NewSmartLogger(enableDebug, level, TAG)
+}

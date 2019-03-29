@@ -16,13 +16,18 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package gitops
+package smartlogger
 
-/*Protocol used for cloning*/
-type Protocol string
+import "github.com/sirupsen/logrus"
 
-const (
-	HTTPS Protocol = "https"
-	SSH   Protocol = "ssh"
-	GIT   Protocol = "git"
-)
+type LogParams struct {
+	Debug bool
+	Level logrus.Level
+}
+
+func (log *SmartLogger) GetParams() LogParams {
+	return LogParams{
+		log.enableDebug,
+		*log.logLevel,
+	}
+}
