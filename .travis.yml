@@ -1,0 +1,13 @@
+language: go
+go:
+  - 1.12
+
+services:
+  - docker
+
+install:
+  - ./build.sh
+  - ./run.sh
+
+script:
+  - go test -mod vendor
