@@ -19,12 +19,12 @@
 package cmd
 
 import (
-	"fmt"
 	"os"
 
-	"github.com/cezarmathe/pwrp/smartlogger"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
+
+	"github.com/cezarmathe/pwrp/smartlogger"
 )
 
 /*The main command*/
@@ -39,7 +39,7 @@ var (
 )
 
 func init() {
-	log = smartlogger.NewSmartLogger(false, logrus.InfoLevel)
+	log = smartlogger.NewSmartLogger(false, logrus.InfoLevel, "cli")
 
 	/*Run the cobra initialization process*/
 	cobra.OnInitialize(initConfig)
@@ -60,23 +60,22 @@ func Execute() {
 	rootCmd.AddCommand(recordCmd)
 
 	if err := rootCmd.Execute(); err != nil {
-		fmt.Println(err)
+		log.FatalErr(err, "error when executing the root command")
 		os.Exit(1)
 	}
-
 }
 
 func runRootCmd(cmd *cobra.Command, args []string) {
 	log.Debug("called")
 	defer log.Debug("returned")
 
-	// FIXME 29/03 cezarmathe: if the configuration failed to load, do not continue
-	log.Trace("initializing the recorder")
-	initializeRecorder()
-
-	log.Info("starting the recording process")
-	if success := recorder.Record(); success == false {
-		log.Fatal("cannot continue due to recording failure")
-	}
-	log.Info("recording was successful")
+	// // FIXME 29/03 cezarmathe: if the configuration failed to load, do not continue
+	// log.Trace("initializing the recorder")
+	// initializeRecorder()
+	//
+	// log.Info("starting the recording process")
+	// if success := recorder.Record(); success == false {
+	// 	log.Fatal("cannot continue due to recording failure")
+	// }
+	// log.Info("recording was successful")
 }

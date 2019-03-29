@@ -46,6 +46,6 @@ func runRecordCmd(cmd *cobra.Command, args []string) {
 	log.Debug("called")
 	defer log.Debug("returned")
 
-	initializeRecorder()
-	recorder.Record()
+	// initializeRecorder()
+	// recorder.Record()
 }
