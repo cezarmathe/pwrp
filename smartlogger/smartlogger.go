@@ -24,14 +24,16 @@ import (
 
 /*SmartLogger is a struct that handles regular and debug logging*/
 type SmartLogger struct {
-	logger      *logrus.Logger
-	debugLogger *logrus.Logger
-	enableDebug bool
-	logLevel    *logrus.Level
+	logger        *logrus.Logger
+	debugLogger   *logrus.Logger
+	enableDebug   bool
+	logLevel      *logrus.Level
+	tag           string
+	currentSubTag string
 }
 
 /*NewSmartLogger creates a new SmartLogger*/
-func NewSmartLogger(enableDebug bool, level logrus.Level) *SmartLogger {
+func NewSmartLogger(enableDebug bool, level logrus.Level, defaultTag string) *SmartLogger {
 	smartLogger := new(SmartLogger)
 
 	smartLogger.logger = logrus.New()
@@ -39,15 +41,25 @@ func NewSmartLogger(enableDebug bool, level logrus.Level) *SmartLogger {
 
 	smartLogger.enableDebug = enableDebug
 	smartLogger.debugLogger = logrus.New()
-	smartLogger.debugLogger.SetReportCaller(true)
+	smartLogger.debugLogger.SetLevel(logrus.DebugLevel)
+	smartLogger.debugLogger.SetReportCaller(false)
+
+	smartLogger.tag = defaultTag
 
 	return smartLogger
 }
 
+/*EnableDebug enables logging on the debug level*/
 func (log *SmartLogger) EnableDebug(enableDebug bool) {
 	log.enableDebug = enableDebug
 }
 
+/*SetLevel sets the logging level for the standard logger*/
 func (log *SmartLogger) SetLevel(level logrus.Level) {
 	log.logger.SetLevel(level)
+}
+
+/*SetTag sets the standard tag for the loggers*/
+func (log *SmartLogger) SetTag(tag string) {
+	log.tag = tag
 }

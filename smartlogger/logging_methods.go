@@ -18,39 +18,82 @@
 
 package smartlogger
 
+import (
+	"runtime"
+	"strings"
+
+	"github.com/sirupsen/logrus"
+)
+
+/*getEntry creates a log entry with the proper fields*/
+func (log *SmartLogger) getEntry(debug bool) *logrus.Entry {
+	var fields logrus.Fields
+
+	/*if a subtag exists, add it to the fields then set it as empty in the log object*/
+	if log.currentSubTag != "" {
+		fields = logrus.Fields{
+			"tag":    log.tag,
+			"subtag": log.currentSubTag,
+		}
+		log.currentSubTag = ""
+	} else {
+		fields = logrus.Fields{
+			"tag": log.tag,
+		}
+	}
+
+	/*if using the debug logger, return an entry based on the debug logger*/
+	if debug {
+		return log.debugLogger.WithFields(fields)
+	}
+	return log.logger.WithFields(fields)
+}
+
 /*Trace logs a message on the Trace level*/
-func (log *SmartLogger) Trace(args ...interface{}) {
-	log.logger.Trace(args)
+func (log *SmartLogger) Trace(args ...string) {
+	log.getEntry(false).Trace(strings.Join(args, " "))
 }
 
 /*Debug logs a message on the Debug level is debug logging is enabled*/
-func (log *SmartLogger) Debug(args ...interface{}) {
-	if log.enableDebug {
-		log.debugLogger.Debug(args)
-	}
+func (log *SmartLogger) Debug(args ...string) {
+	pc, file, line, _ := runtime.Caller(1)
+	name := runtime.FuncForPC(pc).Name()
+	log.getEntry(true).WithFields(logrus.Fields{
+		"file": file,
+		"line": line,
+	}).Debug(name, "(): ", strings.Join(args, " "))
 }
 
 /*Info logs a message on the Info level*/
-func (log *SmartLogger) Info(args ...interface{}) {
-	log.logger.Info(args)
+func (log *SmartLogger) Info(args ...string) {
+	log.getEntry(false).Info(strings.Join(args, " "))
 }
 
 /*Warn logs a message on the Warn level*/
-func (log *SmartLogger) Warn(args ...interface{}) {
-	log.logger.Warn(args)
+func (log *SmartLogger) Warn(args ...string) {
+	log.getEntry(false).Warn(strings.Join(args, " "))
 }
 
 /*WarnErr logs a message on the Warn level with the specified error*/
-func (log *SmartLogger) WarnErr(err error, args ...interface{}) {
-	log.logger.WithError(err).Warn(args)
+func (log *SmartLogger) WarnErr(err error, args ...string) {
+	log.getEntry(false).WithError(err).Warn(strings.Join(args, " "))
 }
 
 /*Fatallogs a message on the Fatal level*/
-func (log *SmartLogger) Fatal(args ...interface{}) {
-	log.logger.Fatal(args)
+func (log *SmartLogger) Fatal(args ...string) {
+	log.getEntry(false).Fatal(strings.Join(args, " "))
 }
 
 /*FatalErr logs a message on the Fatal level with the specified error*/
-func (log *SmartLogger) FatalErr(err error, args ...interface{}) {
-	log.logger.WithError(err).Fatal(args)
+func (log *SmartLogger) FatalErr(err error, args ...string) {
+	log.getEntry(false).WithError(err).Fatal(strings.Join(args, " "))
+}
+
+/*
+WithSubTag writes a subtag when the following log method is called
+It is intended to be used as log.WithSubTag("my_subtag").Trace("message")
+*/
+func (log *SmartLogger) WithSubTag(subtag string) *SmartLogger {
+	log.currentSubTag = subtag
+	return log
 }
