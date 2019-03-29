@@ -75,7 +75,7 @@ func initConfig() {
 
 	home, err := homedir.Dir()
 	if err != nil {
-		log.Fatal(err)
+		log.FatalErr(err, "encountered an error when trying to find the home directory")
 	}
 
 	log.Trace("finding the configuration file")
@@ -100,7 +100,7 @@ func initConfig() {
 	/*load the configuration into the config object*/
 	log.Debug("loading the configuration into the config object")
 	if err := viper.Unmarshal(config); err != nil {
-		log.Fatal(err, "failed to the decode the configuration file")
+		log.FatalErr(err, "failed to the decode the configuration file")
 	}
 
 	/*setting configuration defaults*/
