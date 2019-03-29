@@ -64,6 +64,40 @@ func (log *SmartLogger) Debug(args ...string) {
 	}).Debug(name, "(): ", strings.Join(args, " "))
 }
 
+/*DebugFunctionCalled logs a message on Debug level stating that the calling function was called.*/
+func (log *SmartLogger) DebugFunctionCalled(params ...interface{}) {
+	pc, file, line, _ := runtime.Caller(1)
+	name := runtime.FuncForPC(pc).Name()
+
+	entry := log.getEntry(true).WithFields(logrus.Fields{
+		"file": file,
+		"line": line,
+	})
+
+	if len(params) > 0 {
+		entry.Debug(name, "(): ", "called with ", params)
+	} else {
+		entry.Debug(name, "(): ", "called")
+	}
+}
+
+/*DebugFunctionCalled logs a message on Debug level stating that the calling function returned.*/
+func (log *SmartLogger) DebugFunctionReturned(returnValues ...interface{}) {
+	pc, file, line, _ := runtime.Caller(1)
+	name := runtime.FuncForPC(pc).Name()
+
+	entry := log.getEntry(true).WithFields(logrus.Fields{
+		"file": file,
+		"line": line,
+	})
+
+	if len(returnValues) > 0 {
+		entry.Debug(name, "(): ", "returned ", returnValues)
+	} else {
+		entry.Debug(name, "(): ", "returned")
+	}
+}
+
 /*Info logs a message on the Info level*/
 func (log *SmartLogger) Info(args ...string) {
 	log.getEntry(false).Info(strings.Join(args, " "))

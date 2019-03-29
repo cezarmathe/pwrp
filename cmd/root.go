@@ -52,8 +52,8 @@ func init() {
 /*Execute adds all child commands to the root command and sets flags appropriately.
 This is called by main.main(). It only needs to happen once to the rootCmd.*/
 func Execute() {
-	log.Debug("called")
-	defer log.Debug("returned")
+	log.DebugFunctionCalled()
+	defer log.DebugFunctionReturned()
 
 	log.Debug("adding additional commands to the root command")
 	rootCmd.AddCommand(validateConfigCmd)
@@ -66,8 +66,8 @@ func Execute() {
 }
 
 func runRootCmd(cmd *cobra.Command, args []string) {
-	log.Debug("called")
-	defer log.Debug("returned")
+	log.DebugFunctionCalled(cmd, args)
+	defer log.DebugFunctionReturned()
 
 	// // FIXME 29/03 cezarmathe: if the configuration failed to load, do not continue
 	// log.Trace("initializing the recorder")

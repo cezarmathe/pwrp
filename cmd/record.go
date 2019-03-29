@@ -35,16 +35,16 @@ var (
 )
 
 func initializeRecorder() {
-	log.Debug("called")
-	defer log.Debug("returned")
+	log.DebugFunctionCalled()
+	defer log.DebugFunctionReturned()
 
 	log.Debug("creating recorder")
 	recorder = recording.NewRecorder(config.Recording, logrus.New())
 }
 
 func runRecordCmd(cmd *cobra.Command, args []string) {
-	log.Debug("called")
-	defer log.Debug("returned")
+	log.DebugFunctionCalled(cmd, args)
+	defer log.DebugFunctionReturned()
 
 	// initializeRecorder()
 	// recorder.Record()
