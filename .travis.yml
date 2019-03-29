@@ -10,4 +10,4 @@ install:
   - ./run.sh
 
 script:
-  - go test -mod vendor
+  - ./test.sh
