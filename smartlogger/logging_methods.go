@@ -79,7 +79,17 @@ func (log *SmartLogger) WarnErr(err error, args ...string) {
 	log.getEntry(false).WithError(err).Warn(strings.Join(args, " "))
 }
 
-/*Fatallogs a message on the Fatal level*/
+/*Error logs a message on the Error level*/
+func (log *SmartLogger) Error(args ...string) {
+	log.getEntry(false).Error(strings.Join(args, " "))
+}
+
+/*ErrorErr logs a message on the Error level with the specified error*/
+func (log *SmartLogger) ErrorErr(err error, args ...string) {
+	log.getEntry(false).WithError(err).Error(strings.Join(args, " "))
+}
+
+/*Fatal logs a message on the Fatal level*/
 func (log *SmartLogger) Fatal(args ...string) {
 	log.getEntry(false).Fatal(strings.Join(args, " "))
 }
