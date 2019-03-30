@@ -31,9 +31,9 @@ func Clone(repositoryURL, storagePath string) (*git.Repository, error) {
 	log.Trace("extract repository name from ", repositoryURL)
 	urlEndpoints := strings.Split(repositoryURL, "/")
 	repositoryName := urlEndpoints[len(urlEndpoints)-1]
-	// if strings.HasSuffix(repositoryName, ".git") {
-	// 	strings.TrimSuffix(repositoryName, ".git")
-	// }
+	if strings.HasSuffix(repositoryName, ".git") {
+		repositoryName = strings.TrimSuffix(repositoryName, ".git")
+	}
 	storagePath += "/" + repositoryName
 
 	log.Trace("repository storage path: ", storagePath)
