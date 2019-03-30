@@ -30,13 +30,15 @@ func Clone(repositoryURL, storagePath string) (*git.Repository, error) {
 
 	log.Trace("extract repository name from ", repositoryURL)
 	urlEndpoints := strings.Split(repositoryURL, "/")
-	repositoryName := urlEndpoints[len(urlEndpoints)-1]
+	repositoryName := urlEndpoints[len(urlEndpoints)-2] + "/" + urlEndpoints[len(urlEndpoints)-1]
 	if strings.HasSuffix(repositoryName, ".git") {
 		repositoryName = strings.TrimSuffix(repositoryName, ".git")
 	}
 	storagePath += "/" + repositoryName
 
 	log.Trace("repository storage path: ", storagePath)
+
+	// FIXME 30/03/2019 cezarmathe: check if the repository already exists, and if it does then run git fetch, git pull then return itc
 
 	gitRepo, err := git.PlainClone(storagePath, false, &git.CloneOptions{
 		URL:   repositoryURL,
