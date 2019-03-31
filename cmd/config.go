@@ -84,12 +84,13 @@ func initConfig() {
 	if configFilePath != "" {
 		/*use the configuration file passed by the flag*/
 		log.Trace("using the configuration file passed by flag")
-		viper.SetConfigFile(configFilePath)
 	} else {
 		/*search config in config directory with name "pwrp.toml".*/
 		log.Trace("searching the configuration file in the default path")
-		viper.SetConfigFile(home + "/.config/pwrp.toml")
+		configFilePath = home + "/.config/pwrp.toml"
+
 	}
+	viper.SetConfigFile(configFilePath)
 
 	/*if a config file is found, read it in.*/
 	log.Trace("reading the configuration file")
