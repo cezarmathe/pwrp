@@ -7,8 +7,7 @@ services:
 
 install:
   - ./build.sh
-  - ./cleanbuild.sh
-  - ./run.sh
 
 script:
   - ./test.sh
+  - ./run.sh --env PWRP_VERBOSE=true --env PWRP_DEBUG=true
