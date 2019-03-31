@@ -21,6 +21,7 @@ package config
 import (
 	"os"
 
+	"github.com/mitchellh/go-homedir"
 	"github.com/phayes/permbits"
 
 	"github.com/cezarmathe/pwrp/recording"
@@ -30,6 +31,28 @@ import (
 type Config struct {
 	Recording   *recording.Config `toml:"recording"`
 	StoragePath string            `toml:"storage_path"`
+}
+
+func NewDummyConfig() Config {
+	log.DebugFunctionCalled()
+
+	log.Debug("initialize recording logging")
+	recording.InitLogging(log.GetParams())
+
+	/*find home directory.*/
+	log.Trace("finding home directory")
+	home, err := homedir.Dir()
+	if err != nil {
+		log.FatalErr(err, "encountered an error when trying to find the home directory")
+	}
+
+	dummyConfig := Config{
+		Recording:   recording.NewDummyConfig(),
+		StoragePath: home + "/.local/share/pwrp",
+	}
+
+	log.DebugFunctionReturned(dummyConfig)
+	return dummyConfig
 }
 
 /*ValidateConfig validates the configuration*/
