@@ -38,12 +38,32 @@ func Clone(repositoryURL, storagePath string) (*git.Repository, error) {
 
 	log.Trace("repository storage path: ", storagePath)
 
-	// FIXME 30/03/2019 cezarmathe: check if the repository already exists, and if it does then run git fetch, git pull then return itc
+	/*try to open the repository first*/
+	/*if it exists, load it and pull any remote changes*/
+	/*otherwise, clone the repository*/
+	log.Trace("trying to open the repository located at ", storagePath)
+	gitRepo, err := git.PlainOpen(storagePath)
 
-	gitRepo, err := git.PlainClone(storagePath, false, &git.CloneOptions{
-		URL:   repositoryURL,
-		Depth: 1,
-	})
-	log.DebugFunctionReturned(*gitRepo, err)
+	if err != nil {
+		log.Trace("repository does not exist, cloning...")
+		gitRepo, err = git.PlainClone(storagePath, false, &git.CloneOptions{
+			URL:   repositoryURL,
+			Depth: 1,
+		})
+	} else {
+		log.Trace("repository exists, pulling remote changes")
+		workTree, err := gitRepo.Worktree()
+		if err != nil {
+			log.WarnErr(err, "encountered an error when extracting the repository work tree")
+			return nil, err
+		}
+
+		err = workTree.Pull(&git.PullOptions{RemoteName: "origin"})
+	}
+	if gitRepo != nil {
+		log.DebugFunctionReturned(*gitRepo, err)
+	} else {
+		log.DebugFunctionReturned(nil, err)
+	}
 	return gitRepo, err
 }

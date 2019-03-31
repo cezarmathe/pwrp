@@ -52,11 +52,11 @@ func (recorder *Recorder) Record() bool {
 		log.Trace("operating on URL ", repositoryURL)
 		repository, err := gitops.Clone(repositoryURL, recorder.StoragePath)
 		if err != nil {
-			log.ErrorErr(err, "error encountered when cloning the repository ", repositoryURL)
+			log.ErrorErr(err, "error encountered when loading the repository ", repositoryURL)
 			shouldContinue = false
 			break
 		}
-		log.Info("repository ", repositoryURL, " cloned successfully")
+		log.Info("repository ", repositoryURL, " loaded successfully")
 
 		_, err = repository.Branch("_pwrp")
 
