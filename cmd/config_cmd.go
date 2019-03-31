@@ -19,6 +19,9 @@
 package cmd
 
 import (
+	"io/ioutil"
+
+	"github.com/pelletier/go-toml"
 	"github.com/spf13/cobra"
 
 	cfg "github.com/cezarmathe/pwrp/config"
@@ -26,28 +29,74 @@ import (
 
 var (
 	configCmd = &cobra.Command{
-		Use:   "validate-config",
-		Short: "Validate the configuration file",
+		Use:   "config",
+		Short: "Configuration related tools",
 		Run:   runConfigCmd,
 	}
 )
+
+var (
+	configCmdExportFlag   = false
+	configCmdValidateFlag = false
+)
+
+func init() {
+	configCmd.Flags().BoolVarP(&configCmdExportFlag, "export", "e", false, "export a dummy configuration")
+	configCmd.Flags().BoolVar(&configCmdValidateFlag, "validate", false, "validate the configuration file")
+}
 
 func runConfigCmd(cmd *cobra.Command, args []string) {
 	log.DebugFunctionCalled(*cmd, args)
 	defer log.DebugFunctionReturned()
 
-	log.Info("running the validate config command")
-	runConfigValidation()
+	log.Trace("running config command")
+
+	log.Debug("initializing config logging")
+	cfg.InitLogging(log.GetParams())
+
+	if !configCmdValidateFlag && !configCmdExportFlag {
+		log.Debug("both flags are empty; activating validate")
+		configCmdValidateFlag = true
+	}
+
+	if configCmdExportFlag {
+		log.Trace("exporting dummy configuration file")
+		runConfigExport()
+	}
+	if configCmdValidateFlag {
+		log.Info("validating the configuration file")
+		log.Info("validation passed: ", runConfigValidation())
+	}
 }
 
 func runConfigValidation() bool {
 	log.DebugFunctionCalled()
+
+	log.Info("validating the configuration file")
 
 	log.Debug("initialize config logging")
 	cfg.InitLogging(log.GetParams())
 
 	log.Trace("running the config validation")
 	pass := cfg.ValidateConfig(config)
+
 	log.DebugFunctionReturned(pass)
 	return pass
+}
+
+func runConfigExport() {
+	log.DebugFunctionCalled()
+	defer log.DebugFunctionReturned()
+
+	/*create a new dummy configuration*/
+	dummyConfig := cfg.NewDummyConfig()
+
+	/*write the configuration to a file*/
+	data, _ := toml.Marshal(dummyConfig)
+	err := ioutil.WriteFile(configFilePath, data, 0744)
+	if err != nil {
+		log.ErrorErr(err, "failed to export dummy configuration to ", configFilePath)
+	} else {
+		log.Info("exported dummy configuration")
+	}
 }
