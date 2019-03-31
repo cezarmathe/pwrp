@@ -107,12 +107,5 @@ func initConfig() {
 
 	/*setting configuration defaults*/
 	log.Trace("setting configuration defaults")
-	setDefault(&config.StoragePath, home+"/.local/share/pwrp")
-}
-
-func setDefault(key *string, defaultValue string) {
-	if *key != "" {
-		return
-	}
-	*key = defaultValue
+	viper.SetDefault("storage_path", home+"/.local/share/pwrp")
 }
