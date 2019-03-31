@@ -38,6 +38,8 @@ func ValidateConfig(config *Config) bool {
 
 	var shouldContinue = true
 
+	log.Trace("storage path: ", config.StoragePath)
+
 	/*checking if the storage path is valid and has proper permissions*/
 	log.Trace("checking if the storage path is valid and has proper permissions")
 	if _, pathErr := os.Stat(config.StoragePath); pathErr != nil {
