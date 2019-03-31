@@ -26,20 +26,44 @@ import (
 
 /*Clone clones a repository in a given path with specifically-selected options.*/
 func Clone(repositoryURL, storagePath string) (*git.Repository, error) {
-	// FIXME 29/03 cezarmathe: check code
 	log.DebugFunctionCalled(repositoryURL, storagePath)
 
+	log.Trace("extract repository name from ", repositoryURL)
 	urlEndpoints := strings.Split(repositoryURL, "/")
-	repositoryName := urlEndpoints[len(urlEndpoints)-1]
+	repositoryName := urlEndpoints[len(urlEndpoints)-2] + "/" + urlEndpoints[len(urlEndpoints)-1]
 	if strings.HasSuffix(repositoryName, ".git") {
-		strings.TrimSuffix(repositoryName, ".git")
+		repositoryName = strings.TrimSuffix(repositoryName, ".git")
 	}
 	storagePath += "/" + repositoryName
 
-	gitRepo, err := git.PlainClone(storagePath, false, &git.CloneOptions{
-		URL:   repositoryURL,
-		Depth: 1,
-	})
-	log.DebugFunctionReturned(*gitRepo, err)
+	log.Trace("repository storage path: ", storagePath)
+
+	/*try to open the repository first*/
+	/*if it exists, load it and pull any remote changes*/
+	/*otherwise, clone the repository*/
+	log.Trace("trying to open the repository located at ", storagePath)
+	gitRepo, err := git.PlainOpen(storagePath)
+
+	if err != nil {
+		log.Trace("repository does not exist, cloning...")
+		gitRepo, err = git.PlainClone(storagePath, false, &git.CloneOptions{
+			URL:   repositoryURL,
+			Depth: 1,
+		})
+	} else {
+		log.Trace("repository exists, pulling remote changes")
+		workTree, err := gitRepo.Worktree()
+		if err != nil {
+			log.WarnErr(err, "encountered an error when extracting the repository work tree")
+			return nil, err
+		}
+
+		err = workTree.Pull(&git.PullOptions{RemoteName: "origin"})
+	}
+	if gitRepo != nil {
+		log.DebugFunctionReturned(*gitRepo, err)
+	} else {
+		log.DebugFunctionReturned(nil, err)
+	}
 	return gitRepo, err
 }

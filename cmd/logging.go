@@ -25,7 +25,7 @@ import (
 )
 
 const (
-	TAG = "config"
+	TAG = "cli"
 )
 
 var (

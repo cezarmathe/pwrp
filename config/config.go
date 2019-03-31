@@ -59,7 +59,7 @@ func ValidateConfig(config *Config) bool {
 			permbits.UpdateFileMode(fileMode, permissions)
 
 			log.Trace("creating storage directory")
-			err := os.Mkdir(config.StoragePath, *fileMode)
+			err := os.MkdirAll(config.StoragePath, *fileMode)
 			if err != nil {
 				log.ErrorErr(NewErrCreateStorageDir(config.StoragePath), "storage path validation failed")
 				shouldContinue = false
@@ -88,7 +88,7 @@ func ValidateConfig(config *Config) bool {
 	/*running the recording validation*/
 	log.Trace("running the recorder validation")
 	recording.InitLogging(log.GetParams())
-	shouldContinue = recording.NewRecorder(config.Recording).ValidateConfig() && shouldContinue
+	shouldContinue = recording.NewRecorder(config.Recording, "").ValidateConfig() && shouldContinue
 
 	log.DebugFunctionReturned(shouldContinue)
 	return shouldContinue

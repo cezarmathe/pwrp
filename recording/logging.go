@@ -23,7 +23,7 @@ import (
 )
 
 const (
-	TAG = "config"
+	TAG = "recording"
 )
 
 var (

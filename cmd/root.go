@@ -63,6 +63,11 @@ func runRootCmd(cmd *cobra.Command, args []string) {
 	log.DebugFunctionCalled(*cmd, args)
 	defer log.DebugFunctionReturned()
 
+	if pass := runConfigValidation(); pass == false {
+		log.Fatal("configuration did not pass the validation process")
+	}
+	log.Trace("configuration passed the validation process")
+
 	log.Trace("initializing the recorder")
 	initializeRecorder()
 
