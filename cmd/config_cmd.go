@@ -25,14 +25,14 @@ import (
 )
 
 var (
-	validateConfigCmd = &cobra.Command{
+	configCmd = &cobra.Command{
 		Use:   "validate-config",
 		Short: "Validate the configuration file",
-		Run:   runValidateConfigCmd,
+		Run:   runConfigCmd,
 	}
 )
 
-func runValidateConfigCmd(cmd *cobra.Command, args []string) {
+func runConfigCmd(cmd *cobra.Command, args []string) {
 	log.DebugFunctionCalled(*cmd, args)
 	defer log.DebugFunctionReturned()
 
