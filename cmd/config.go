@@ -20,6 +20,7 @@ package cmd
 
 import (
 	"github.com/cezarmathe/pwrp/gitops"
+	"github.com/cezarmathe/pwrp/recording"
 	"github.com/mitchellh/go-homedir"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
@@ -89,13 +90,13 @@ func initConfig() {
 
 	/*set configuration defaults*/
 	log.Trace("setting configuration defaults")
-	config.SetDefault("storage_path", home+"/.local/share/pwrp")
-	config.SetDefault("recording.repositories", []string{})
-	config.SetDefault("recording.protocol", gitops.DefaultProtocol)
-	config.SetDefault("recording.skips.missing_branch", false)
-	config.SetDefault("recording.skips.bad_url", false)
-	config.SetDefault("recording.skips.bad_protocol", false)
-	config.SetDefault("recording.skips.all", false)
+	config.SetDefault(cfg.StoragePathKey, home+"/.local/share/pwrp")
+	config.SetDefault(recording.RepositoryListKey, []string{})
+	config.SetDefault(recording.ProtocolKey, gitops.DefaultProtocol)
+	config.SetDefault(recording.SkipsMissingBranchKey, false)
+	config.SetDefault(recording.SkipsBadUrlKey, false)
+	config.SetDefault(recording.SkipsBadProtocolKey, false)
+	config.SetDefault(recording.SkipsAllKey, false)
 
 	/*set configuration file properties*/
 	log.Trace("setting configuration file properties")

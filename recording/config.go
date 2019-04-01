@@ -25,6 +25,21 @@ import (
 	"github.com/cezarmathe/pwrp/gitops"
 )
 
+/*Viper configuration keys*/
+const (
+	BaseKey = "recording."
+
+	RepositoryListKey = BaseKey + "repositories"
+	ProtocolKey       = BaseKey + "protocol"
+
+	SkipsBaseKey = BaseKey + "skips."
+
+	SkipsMissingBranchKey = SkipsBaseKey + "missing_branch"
+	SkipsBadUrlKey        = SkipsBaseKey + "bad_url"
+	SkipsBadProtocolKey   = SkipsBaseKey + "bad_protocol"
+	SkipsAllKey           = SkipsBaseKey + "all"
+)
+
 /*Config contains configurations for the recording process*/
 type Config struct {
 	Repositories []string        `toml:"repositories"`

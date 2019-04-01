@@ -27,6 +27,10 @@ import (
 	"github.com/cezarmathe/pwrp/recording"
 )
 
+const (
+	StoragePathKey = "storage_path"
+)
+
 /*Config is a container for the entire utility configuration*/
 type Config struct {
 	Recording   *recording.Config `toml:"recording"`
