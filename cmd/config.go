@@ -19,6 +19,7 @@
 package cmd
 
 import (
+	"github.com/cezarmathe/pwrp/gitops"
 	"github.com/mitchellh/go-homedir"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
@@ -31,42 +32,48 @@ var (
 	configFilePath string
 
 	/*the configuration object*/
-	config *cfg.Config
+	_config *cfg.Config
+
+	/*configuration utility*/
+	config *viper.Viper
 )
 
 func init() {
-	config = new(cfg.Config)
+	/*initialize the configuration utility*/
+	config = viper.New()
+
+	_config = new(cfg.Config)
 }
 
-/*initConfig reads in config file and ENV variables if set.*/
+/*initConfig reads in the configuration file and ENV variables if set.*/
 func initConfig() {
 	log.DebugFunctionCalled()
 	defer log.DebugFunctionReturned()
 
 	/*flag configurations*/
-	err := viper.BindPFlag("verbose", rootCmd.Flags().Lookup("verbose"))
+	err := config.BindPFlag("verbose", rootCmd.Flags().Lookup("verbose"))
 	if err != nil {
 		log.FatalErr(err, "encountered an error when binding a flag")
 	}
 
 	/*env configurations*/
-	viper.SetEnvPrefix("pwrp")
-	err = viper.BindEnv("debug")
-	err = viper.BindEnv("verbose")
+	config.SetEnvPrefix("pwrp")
+	err = config.BindEnv("debug")
+	err = config.BindEnv("verbose")
 	if err != nil {
 		log.FatalErr(err, "encountered an error when binding an environment variable")
 	}
 
 	/*read in environment variables that match*/
-	viper.AutomaticEnv()
+	config.AutomaticEnv()
 
-	if viper.GetBool("verbose") {
+	if config.GetBool("verbose") {
 		log.SetLevel(logrus.TraceLevel)
 		log.Trace("verbose logging level")
 	} else {
 		log.SetLevel(logrus.InfoLevel)
 	}
-	if viper.GetBool("debug") {
+	if config.GetBool("debug") {
 		log.EnableDebug(true)
 		log.Debug("debugging enabled")
 	} else {
@@ -80,33 +87,39 @@ func initConfig() {
 		log.FatalErr(err, "encountered an error when trying to find the home directory")
 	}
 
+	/*set configuration defaults*/
+	log.Trace("setting configuration defaults")
+	viper.SetDefault("storage_path", home+"/.local/share/pwrp")
+	viper.SetDefault("recording.repositories", []string{})
+	viper.SetDefault("recording.protocol", gitops.DefaultProtocol)
+	viper.SetDefault("recording.skips.missing_branch", false)
+	viper.SetDefault("recording.skips.bad_url", false)
+	viper.SetDefault("recording.skips.bad_protocol", false)
+	viper.SetDefault("recording.skips.all", false)
+
 	log.Trace("finding the configuration file")
 	if configFilePath != "" {
 		/*use the configuration file passed by the flag*/
 		log.Trace("using the configuration file passed by flag")
 	} else {
-		/*search config in config directory with name "pwrp.toml".*/
+		/*search _config in _config directory with name "pwrp.toml".*/
 		log.Trace("searching the configuration file in the default path")
-		configFilePath = home + "/.config/pwrp.toml"
+		configFilePath = home + "/._config/pwrp.toml"
 
 	}
 	viper.SetConfigFile(configFilePath)
 
-	/*if a config file is found, read it in.*/
+	/*if a configuration file is found, read it in.*/
 	log.Trace("reading the configuration file")
-	if err := viper.ReadInConfig(); err == nil {
-		log.Info("using " + viper.ConfigFileUsed() + " as the configuration file")
+	if err := config.ReadInConfig(); err == nil {
+		log.Info("using " + config.ConfigFileUsed() + " as the configuration file")
 	} else {
-		log.FatalErr(err, "failed reading "+viper.ConfigFileUsed())
+		log.FatalErr(err, "failed reading "+config.ConfigFileUsed())
 	}
 
-	/*load the configuration into the config object*/
-	log.Trace("loading the configuration into the config object")
-	if err := viper.Unmarshal(config); err != nil {
+	/*load the configuration into the _config object*/
+	log.Trace("loading the configuration into the _config object")
+	if err := viper.Unmarshal(_config); err != nil {
 		log.FatalErr(err, "failed to the decode the configuration file")
 	}
-
-	/*setting configuration defaults*/
-	log.Trace("setting configuration defaults")
-	viper.SetDefault("storage_path", home+"/.local/share/pwrp")
 }

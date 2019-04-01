@@ -38,7 +38,7 @@ func initializeRecorder() {
 	defer log.DebugFunctionReturned()
 
 	recording.InitLogging(log.GetParams())
-	recorder = recording.NewRecorder(config.Recording, config.StoragePath)
+	recorder = recording.NewRecorder(_config.Recording, _config.StoragePath)
 }
 
 func runRecordCmd(cmd *cobra.Command, args []string) {

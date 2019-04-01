@@ -29,7 +29,7 @@ import (
 
 var (
 	configCmd = &cobra.Command{
-		Use:   "config",
+		Use:   "_config",
 		Short: "Configuration related tools",
 		Run:   runConfigCmd,
 	}
@@ -49,9 +49,9 @@ func runConfigCmd(cmd *cobra.Command, args []string) {
 	log.DebugFunctionCalled(*cmd, args)
 	defer log.DebugFunctionReturned()
 
-	log.Trace("running config command")
+	log.Trace("running _config command")
 
-	log.Debug("initializing config logging")
+	log.Debug("initializing _config logging")
 	cfg.InitLogging(log.GetParams())
 
 	if !configCmdValidateFlag && !configCmdExportFlag {
@@ -74,11 +74,11 @@ func runConfigValidation() bool {
 
 	log.Info("validating the configuration file")
 
-	log.Debug("initialize config logging")
+	log.Debug("initialize _config logging")
 	cfg.InitLogging(log.GetParams())
 
-	log.Trace("running the config validation")
-	pass := cfg.ValidateConfig(config)
+	log.Trace("running the _config validation")
+	pass := cfg.ValidateConfig(_config)
 
 	log.DebugFunctionReturned(pass)
 	return pass
