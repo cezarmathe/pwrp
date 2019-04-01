@@ -89,32 +89,29 @@ func initConfig() {
 
 	/*set configuration defaults*/
 	log.Trace("setting configuration defaults")
-	viper.SetDefault("storage_path", home+"/.local/share/pwrp")
-	viper.SetDefault("recording.repositories", []string{})
-	viper.SetDefault("recording.protocol", gitops.DefaultProtocol)
-	viper.SetDefault("recording.skips.missing_branch", false)
-	viper.SetDefault("recording.skips.bad_url", false)
-	viper.SetDefault("recording.skips.bad_protocol", false)
-	viper.SetDefault("recording.skips.all", false)
+	config.SetDefault("storage_path", home+"/.local/share/pwrp")
+	config.SetDefault("recording.repositories", []string{})
+	config.SetDefault("recording.protocol", gitops.DefaultProtocol)
+	config.SetDefault("recording.skips.missing_branch", false)
+	config.SetDefault("recording.skips.bad_url", false)
+	config.SetDefault("recording.skips.bad_protocol", false)
+	config.SetDefault("recording.skips.all", false)
 
-	log.Trace("finding the configuration file")
+	/*set configuration file properties*/
+	log.Trace("setting configuration file properties")
+	config.SetConfigName("pwrp")
+	config.SetConfigType("toml")
 	if configFilePath != "" {
-		/*use the configuration file passed by the flag*/
-		log.Trace("using the configuration file passed by flag")
-	} else {
-		/*search _config in _config directory with name "pwrp.toml".*/
-		log.Trace("searching the configuration file in the default path")
-		configFilePath = home + "/._config/pwrp.toml"
-
+		config.AddConfigPath(configFilePath)
 	}
-	viper.SetConfigFile(configFilePath)
+	config.AddConfigPath(home + "/.config")
 
-	/*if a configuration file is found, read it in.*/
+	/*read configuration file*/
 	log.Trace("reading the configuration file")
 	if err := config.ReadInConfig(); err == nil {
-		log.Info("using " + config.ConfigFileUsed() + " as the configuration file")
+		log.Info("using ", config.ConfigFileUsed(), " as the configuration file")
 	} else {
-		log.FatalErr(err, "failed reading "+config.ConfigFileUsed())
+		log.FatalErr(err, "failed reading ", config.ConfigFileUsed())
 	}
 
 	/*load the configuration into the _config object*/
