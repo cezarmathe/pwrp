@@ -23,6 +23,7 @@ import (
 
 	"github.com/pelletier/go-toml"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 
 	cfg "github.com/cezarmathe/pwrp/config"
 )
@@ -78,7 +79,7 @@ func runConfigValidation() bool {
 	cfg.InitLogging(log.GetParams())
 
 	log.Trace("running the _config validation")
-	pass := cfg.ValidateConfig(_config)
+	pass := cfg.ValidateConfig(config)
 
 	log.DebugFunctionReturned(pass)
 	return pass
@@ -89,7 +90,8 @@ func runConfigExport() {
 	defer log.DebugFunctionReturned()
 
 	/*create a new dummy configuration*/
-	dummyConfig := cfg.NewDummyConfig()
+	dummyConfig := viper.New()
+	cfg.NewDummyConfig(dummyConfig)
 
 	/*write the configuration to a file*/
 	data, _ := toml.Marshal(dummyConfig)

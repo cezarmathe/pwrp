@@ -22,6 +22,8 @@ import (
 	"net/url"
 	"strings"
 
+	"github.com/spf13/viper"
+
 	"github.com/cezarmathe/pwrp/gitops"
 )
 
@@ -53,14 +55,18 @@ type Config struct {
 }
 
 /*NewDummyConfig creates a new dummy configuration file*/
-func NewDummyConfig() *Config {
+func NewDummyConfig(dummyConfig *viper.Viper) {
 	log.DebugFunctionCalled()
-	config := &Config{
-		Repositories: []string{},
-		Protocol:     gitops.GIT,
-	}
-	log.DebugFunctionReturned(*config)
-	return config
+
+	dummyConfig.Set(RepositoryListKey, []string{})
+	dummyConfig.Set(ProtocolKey, gitops.DefaultProtocol)
+
+	dummyConfig.Set(SkipsMissingBranchKey, false)
+	dummyConfig.Set(SkipsBadUrlKey, false)
+	dummyConfig.Set(SkipsBadProtocolKey, false)
+	dummyConfig.Set(SkipsAllKey, false)
+
+	log.DebugFunctionReturned()
 }
 
 /*ValidateConfig checks the configuration and validates its integrity*/
@@ -72,7 +78,7 @@ func (recorder *Recorder) ValidateConfig() bool {
 
 	/*checking if any repositories were provided*/
 	log.Trace("checking if any repositories were provided")
-	if len(recorder.Config.Repositories) == 0 {
+	if len(recorder.Config.GetStringSlice(RepositoryListKey)) == 0 {
 		checkConfigError(false, &configIsValid, ErrNoRepositories)
 		configIsValid = false
 	} else {
@@ -81,18 +87,21 @@ func (recorder *Recorder) ValidateConfig() bool {
 
 	/*checking if the protocol is good*/
 	log.Trace("checking cloning protocol")
-	if recorder.Config.Protocol == "" {
+	if recorder.Config.Get(ProtocolKey) == "" {
 		log.Trace("using the default protocol")
-		recorder.Config.Protocol = gitops.DefaultProtocol
+		recorder.Config.Get(ProtocolKey) = gitops.DefaultProtocol
 	}
-	if !(recorder.Config.Protocol == gitops.GIT || recorder.Config.Protocol == gitops.HTTPS || recorder.Config.Protocol == gitops.SSH) {
-		checkConfigError(recorder.Config.Skips.BadProtocol, &configIsValid, NewErrBadProtocol(recorder.Config.Protocol))
+	if !(recorder.Config.Get(ProtocolKey) == gitops.GIT || recorder.Config.Get(ProtocolKey) == gitops.HTTPS || recorder.Config.Get(ProtocolKey) == gitops.SSH) {
+		checkConfigError(
+			recorder.Config.GetBool(SkipsBadProtocolKey),
+			&configIsValid,
+			NewErrBadProtocol(gitops.NewProtocol(recorder.Config.GetString(ProtocolKey))))
 	}
 
 	/*checking each repository's URL and protocol*/
 	log.Trace("checking repository URL's")
-	for index := range recorder.Config.Repositories {
-		repoUrl := &recorder.Config.Repositories[index]
+	for index := range recorder.Config.GetStringSlice(RepositoryListKey) {
+		repoUrl := &recorder.Config.GetStringSlice(RepositoryListKey)[index]
 		log.Trace("checking URL ", *repoUrl)
 
 		/*check if the URL has a protocol*/
@@ -105,13 +114,13 @@ func (recorder *Recorder) ValidateConfig() bool {
 		} else if urlHasProtocol(*repoUrl, gitops.GIT) || urlHasProtocol(*repoUrl, gitops.SSH) || urlHasProtocol(*repoUrl, gitops.HTTPS) {
 			log.Trace("the url ", *repoUrl, " has a valid protocol")
 		} else {
-			checkConfigError(recorder.Config.Skips.BadProtocol, &configIsValid, NewErrBadURL(*repoUrl))
+			checkConfigError(recorder.Config.GetBool(SkipsBadProtocolKey), &configIsValid, NewErrBadURL(*repoUrl))
 		}
 
 		/*checking if the repoUrl is valid*/
 		_, err := url.ParseRequestURI(*repoUrl)
 		if err != nil {
-			checkConfigError(recorder.Config.Skips.BadURL, &configIsValid, NewErrBadURL(recorder.Config.Repositories[index]))
+			checkConfigError(recorder.Config.GetBool(SkipsBadUrlKey), &configIsValid, NewErrBadURL(recorder.Config.GetStringSlice(RepositoryListKey)[index]))
 		}
 	}
 	if configIsValid {

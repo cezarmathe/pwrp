@@ -32,9 +32,6 @@ var (
 	/*path to the configuration file*/
 	configFilePath string
 
-	/*the configuration object*/
-	_config *cfg.Config
-
 	/*configuration utility*/
 	config *viper.Viper
 )
@@ -42,8 +39,6 @@ var (
 func init() {
 	/*initialize the configuration utility*/
 	config = viper.New()
-
-	_config = new(cfg.Config)
 }
 
 /*initConfig reads in the configuration file and ENV variables if set.*/
@@ -113,11 +108,5 @@ func initConfig() {
 		log.Info("using ", config.ConfigFileUsed(), " as the configuration file")
 	} else {
 		log.FatalErr(err, "failed reading ", config.ConfigFileUsed())
-	}
-
-	/*load the configuration into the _config object*/
-	log.Trace("loading the configuration into the _config object")
-	if err := viper.Unmarshal(_config); err != nil {
-		log.FatalErr(err, "failed to the decode the configuration file")
 	}
 }

@@ -28,3 +28,17 @@ const (
 	GIT             Protocol = "git"
 	DefaultProtocol          = GIT
 )
+
+/*NewProtocol returns a new protocol based on the passed string*/
+func NewProtocol(protocol string) Protocol {
+	switch protocol {
+	case "HTTPS":
+		return HTTPS
+	case "SSH":
+		return SSH
+	case "GIT":
+		return GIT
+	default:
+		return DefaultProtocol
+	}
+}
