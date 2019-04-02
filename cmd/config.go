@@ -19,13 +19,12 @@
 package cmd
 
 import (
-	"github.com/cezarmathe/pwrp/gitops"
-	"github.com/cezarmathe/pwrp/recording"
 	"github.com/mitchellh/go-homedir"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 
-	cfg "github.com/cezarmathe/pwrp/config"
+	"github.com/cezarmathe/pwrp/config/keys"
+	"github.com/cezarmathe/pwrp/gitops"
 )
 
 var (
@@ -85,13 +84,13 @@ func initConfig() {
 
 	/*set configuration defaults*/
 	log.Trace("setting configuration defaults")
-	config.SetDefault(cfg.StoragePathKey, home+"/.local/share/pwrp")
-	config.SetDefault(recording.RepositoryListKey, []string{})
-	config.SetDefault(recording.ProtocolKey, gitops.DefaultProtocol)
-	config.SetDefault(recording.SkipsMissingBranchKey, false)
-	config.SetDefault(recording.SkipsBadUrlKey, false)
-	config.SetDefault(recording.SkipsBadProtocolKey, false)
-	config.SetDefault(recording.SkipsAllKey, false)
+	config.SetDefault(keys.StoragePathKey, home+"/.local/share/pwrp")
+	config.SetDefault(keys.RecordingRepositoryListKey, []string{})
+	config.SetDefault(keys.RecordingProtocolKey, gitops.DefaultProtocol)
+	config.SetDefault(keys.RecordingSkipsMissingBranchKey, false)
+	config.SetDefault(keys.RecordingSkipsBadUrlKey, false)
+	config.SetDefault(keys.RecordingSkipsBadProtocolKey, false)
+	config.SetDefault(keys.RecordingSkipsAllKey, false)
 
 	/*set configuration file properties*/
 	log.Trace("setting configuration file properties")

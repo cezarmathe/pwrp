@@ -22,26 +22,10 @@ import (
 	"net/url"
 	"strings"
 
+	"github.com/cezarmathe/pwrp/config/keys"
 	"github.com/spf13/viper"
 
 	"github.com/cezarmathe/pwrp/gitops"
-)
-
-/*Viper configuration keys*/
-const (
-	StoragePathKey = "storage_path"
-
-	BaseKey = "recording."
-
-	RepositoryListKey = BaseKey + "repositories"
-	ProtocolKey       = BaseKey + "protocol"
-
-	SkipsBaseKey = BaseKey + "skips."
-
-	SkipsMissingBranchKey = SkipsBaseKey + "missing_branch"
-	SkipsBadUrlKey        = SkipsBaseKey + "bad_url"
-	SkipsBadProtocolKey   = SkipsBaseKey + "bad_protocol"
-	SkipsAllKey           = SkipsBaseKey + "all"
 )
 
 /*Config contains configurations for the recording process*/
@@ -60,13 +44,13 @@ type Config struct {
 func NewDummyConfig(dummyConfig *viper.Viper) {
 	log.DebugFunctionCalled()
 
-	dummyConfig.Set(RepositoryListKey, []string{})
-	dummyConfig.Set(ProtocolKey, gitops.DefaultProtocol)
+	dummyConfig.Set(keys.RecordingRepositoryListKey, []string{})
+	dummyConfig.Set(keys.RecordingProtocolKey, gitops.DefaultProtocol)
 
-	dummyConfig.Set(SkipsMissingBranchKey, false)
-	dummyConfig.Set(SkipsBadUrlKey, false)
-	dummyConfig.Set(SkipsBadProtocolKey, false)
-	dummyConfig.Set(SkipsAllKey, false)
+	dummyConfig.Set(keys.RecordingSkipsMissingBranchKey, false)
+	dummyConfig.Set(keys.RecordingSkipsBadUrlKey, false)
+	dummyConfig.Set(keys.RecordingSkipsBadProtocolKey, false)
+	dummyConfig.Set(keys.RecordingSkipsAllKey, false)
 
 	log.DebugFunctionReturned()
 }
@@ -80,7 +64,7 @@ func (recorder *Recorder) ValidateConfig() bool {
 
 	/*checking if any repositories were provided*/
 	log.Trace("checking if any repositories were provided")
-	if len(recorder.Config.GetStringSlice(RepositoryListKey)) == 0 {
+	if len(recorder.Config.GetStringSlice(keys.RecordingRepositoryListKey)) == 0 {
 		checkConfigError(false, &configIsValid, ErrNoRepositories)
 		configIsValid = false
 	} else {
@@ -89,23 +73,23 @@ func (recorder *Recorder) ValidateConfig() bool {
 
 	/*checking if the protocol is good*/
 	log.Trace("checking cloning protocol")
-	if recorder.Config.Get(ProtocolKey) == "" {
+	if recorder.Config.Get(keys.RecordingProtocolKey) == "" {
 		log.Trace("using the default protocol")
-		recorder.Config.Set(ProtocolKey, gitops.DefaultProtocol)
+		recorder.Config.Set(keys.RecordingProtocolKey, gitops.DefaultProtocol)
 	}
-	if !(gitops.NewProtocol(recorder.Config.GetString(ProtocolKey)) == gitops.GIT ||
-		gitops.NewProtocol(recorder.Config.GetString(ProtocolKey)) == gitops.HTTPS ||
-		gitops.NewProtocol(recorder.Config.GetString(ProtocolKey)) == gitops.SSH) {
+	if !(gitops.NewProtocol(recorder.Config.GetString(keys.RecordingProtocolKey)) == gitops.GIT ||
+		gitops.NewProtocol(recorder.Config.GetString(keys.RecordingProtocolKey)) == gitops.HTTPS ||
+		gitops.NewProtocol(recorder.Config.GetString(keys.RecordingProtocolKey)) == gitops.SSH) {
 
 		checkConfigError(
-			recorder.Config.GetBool(SkipsBadProtocolKey),
+			recorder.Config.GetBool(keys.RecordingSkipsBadProtocolKey),
 			&configIsValid,
-			NewErrBadProtocol(gitops.NewProtocol(recorder.Config.GetString(ProtocolKey))))
+			NewErrBadProtocol(gitops.NewProtocol(recorder.Config.GetString(keys.RecordingProtocolKey))))
 	}
 
 	/*checking each repository's URL and protocol*/
 	log.Trace("checking repository URL's")
-	repositories := recorder.Config.GetStringSlice(RepositoryListKey)
+	repositories := recorder.Config.GetStringSlice(keys.RecordingRepositoryListKey)
 	for index := range repositories {
 		repoUrl := &repositories[index]
 		log.Trace("checking URL ", *repoUrl)
@@ -120,16 +104,16 @@ func (recorder *Recorder) ValidateConfig() bool {
 		} else if urlHasProtocol(*repoUrl, gitops.GIT) || urlHasProtocol(*repoUrl, gitops.SSH) || urlHasProtocol(*repoUrl, gitops.HTTPS) {
 			log.Trace("the url ", *repoUrl, " has a valid protocol")
 		} else {
-			checkConfigError(recorder.Config.GetBool(SkipsBadProtocolKey), &configIsValid, NewErrBadURL(*repoUrl))
+			checkConfigError(recorder.Config.GetBool(keys.RecordingSkipsBadProtocolKey), &configIsValid, NewErrBadURL(*repoUrl))
 		}
 
 		/*checking if the repoUrl is valid*/
 		_, err := url.ParseRequestURI(*repoUrl)
 		if err != nil {
-			checkConfigError(recorder.Config.GetBool(SkipsBadUrlKey), &configIsValid, NewErrBadURL(*repoUrl))
+			checkConfigError(recorder.Config.GetBool(keys.RecordingSkipsBadUrlKey), &configIsValid, NewErrBadURL(*repoUrl))
 		}
 	}
-	recorder.Config.Set(RepositoryListKey, repositories)
+	recorder.Config.Set(keys.RecordingRepositoryListKey, repositories)
 	if configIsValid {
 		log.Info("validated the recording configuration")
 	} else {

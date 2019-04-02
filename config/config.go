@@ -21,15 +21,12 @@ package config
 import (
 	"os"
 
+	"github.com/cezarmathe/pwrp/config/keys"
 	"github.com/mitchellh/go-homedir"
 	"github.com/phayes/permbits"
 	"github.com/spf13/viper"
 
 	"github.com/cezarmathe/pwrp/recording"
-)
-
-const (
-	StoragePathKey = "storage_path"
 )
 
 /*Config is a container for the entire utility configuration*/
@@ -52,7 +49,7 @@ func NewDummyConfig(dummyConfig *viper.Viper) {
 	}
 
 	recording.NewDummyConfig(dummyConfig)
-	viper.Set(StoragePathKey, home+"/.local/share/pwrp")
+	viper.Set(keys.StoragePathKey, home+"/.local/share/pwrp")
 
 	log.DebugFunctionReturned()
 }
@@ -63,17 +60,16 @@ func ValidateConfig(globalConfig *viper.Viper) bool {
 
 	var shouldContinue = true
 
-	log.Trace("storage path: ", globalConfig.GetString(StoragePathKey))
+	log.Trace("storage path: ", globalConfig.GetString(keys.StoragePathKey))
 
 	/*checking if the storage path is valid and has proper permissions*/
 	log.Trace("checking if the storage path is valid and it exists")
-	if _, pathErr := os.Stat(globalConfig.GetString(StoragePathKey)); pathErr != nil {
-		log.WarnErr(pathErr)
+	if _, pathErr := os.Stat(globalConfig.GetString(keys.StoragePathKey)); pathErr != nil {
 
 		/*check if the directory exists and create it if it doesn't*/
 		log.Trace("checking if the path exists")
 		if os.IsNotExist(pathErr) {
-			log.Warn("storage path does not exist, attempting to create it")
+			log.Warn("storage path ,", globalConfig.GetString(keys.StoragePathKey), " does not exist, attempting to create it")
 
 			var permissions permbits.PermissionBits
 
@@ -86,12 +82,12 @@ func ValidateConfig(globalConfig *viper.Viper) bool {
 			permbits.UpdateFileMode(fileMode, permissions)
 
 			log.Trace("creating storage directory")
-			err := os.MkdirAll(globalConfig.GetString(StoragePathKey), *fileMode)
+			err := os.MkdirAll(globalConfig.GetString(keys.StoragePathKey), *fileMode)
 			if err != nil {
-				log.ErrorErr(NewErrCreateStorageDir(globalConfig.GetString(StoragePathKey)), "storage path validation failed")
+				log.ErrorErr(NewErrCreateStorageDir(globalConfig.GetString(keys.StoragePathKey)), "storage path validation failed")
 				shouldContinue = false
 			} else {
-				log.Info("created storage directory at " + globalConfig.GetString(StoragePathKey))
+				log.Info("created storage directory at " + globalConfig.GetString(keys.StoragePathKey))
 			}
 		} else { /*another error*/
 			log.ErrorErr(pathErr, "unknown error")
@@ -103,9 +99,9 @@ func ValidateConfig(globalConfig *viper.Viper) bool {
 
 	/*check if the directory has the proper permissions*/
 	log.Trace("checking if the storage directory has the proper permissions")
-	if permissions, err := permbits.Stat(globalConfig.GetString(StoragePathKey)); err == nil {
+	if permissions, err := permbits.Stat(globalConfig.GetString(keys.StoragePathKey)); err == nil {
 		if !permissions.UserExecute() || !permissions.UserRead() || !permissions.UserWrite() {
-			log.ErrorErr(NewErrNoPermissions(globalConfig.GetString(StoragePathKey)))
+			log.ErrorErr(NewErrNoPermissions(globalConfig.GetString(keys.StoragePathKey)))
 			shouldContinue = false
 		}
 	} else {
