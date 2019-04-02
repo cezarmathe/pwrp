@@ -50,9 +50,9 @@ func runConfigCmd(cmd *cobra.Command, args []string) {
 	log.DebugFunctionCalled(*cmd, args)
 	defer log.DebugFunctionReturned()
 
-	log.Trace("running _config command")
+	log.Trace("running config command")
 
-	log.Debug("initializing _config logging")
+	log.Debug("initializing config logging")
 	cfg.InitLogging(log.GetParams())
 
 	if !configCmdValidateFlag && !configCmdExportFlag {
@@ -75,10 +75,10 @@ func runConfigValidation() bool {
 
 	log.Info("validating the configuration file")
 
-	log.Debug("initialize _config logging")
+	log.Debug("initialize config logging")
 	cfg.InitLogging(log.GetParams())
 
-	log.Trace("running the _config validation")
+	log.Trace("running the config validation")
 	pass := cfg.ValidateConfig(config)
 
 	log.DebugFunctionReturned(pass)

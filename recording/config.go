@@ -29,6 +29,8 @@ import (
 
 /*Viper configuration keys*/
 const (
+	StoragePathKey = "storage_path"
+
 	BaseKey = "recording."
 
 	RepositoryListKey = BaseKey + "repositories"
@@ -89,9 +91,12 @@ func (recorder *Recorder) ValidateConfig() bool {
 	log.Trace("checking cloning protocol")
 	if recorder.Config.Get(ProtocolKey) == "" {
 		log.Trace("using the default protocol")
-		recorder.Config.Get(ProtocolKey) = gitops.DefaultProtocol
+		recorder.Config.Set(ProtocolKey, gitops.DefaultProtocol)
 	}
-	if !(recorder.Config.Get(ProtocolKey) == gitops.GIT || recorder.Config.Get(ProtocolKey) == gitops.HTTPS || recorder.Config.Get(ProtocolKey) == gitops.SSH) {
+	if !(gitops.NewProtocol(recorder.Config.GetString(ProtocolKey)) == gitops.GIT ||
+		gitops.NewProtocol(recorder.Config.GetString(ProtocolKey)) == gitops.HTTPS ||
+		gitops.NewProtocol(recorder.Config.GetString(ProtocolKey)) == gitops.SSH) {
+
 		checkConfigError(
 			recorder.Config.GetBool(SkipsBadProtocolKey),
 			&configIsValid,
@@ -100,8 +105,9 @@ func (recorder *Recorder) ValidateConfig() bool {
 
 	/*checking each repository's URL and protocol*/
 	log.Trace("checking repository URL's")
-	for index := range recorder.Config.GetStringSlice(RepositoryListKey) {
-		repoUrl := &recorder.Config.GetStringSlice(RepositoryListKey)[index]
+	repositories := recorder.Config.GetStringSlice(RepositoryListKey)
+	for index := range repositories {
+		repoUrl := &repositories[index]
 		log.Trace("checking URL ", *repoUrl)
 
 		/*check if the URL has a protocol*/
@@ -120,9 +126,10 @@ func (recorder *Recorder) ValidateConfig() bool {
 		/*checking if the repoUrl is valid*/
 		_, err := url.ParseRequestURI(*repoUrl)
 		if err != nil {
-			checkConfigError(recorder.Config.GetBool(SkipsBadUrlKey), &configIsValid, NewErrBadURL(recorder.Config.GetStringSlice(RepositoryListKey)[index]))
+			checkConfigError(recorder.Config.GetBool(SkipsBadUrlKey), &configIsValid, NewErrBadURL(*repoUrl))
 		}
 	}
+	recorder.Config.Set(RepositoryListKey, repositories)
 	if configIsValid {
 		log.Info("validated the recording configuration")
 	} else {

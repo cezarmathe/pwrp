@@ -66,7 +66,7 @@ func ValidateConfig(globalConfig *viper.Viper) bool {
 	log.Trace("storage path: ", globalConfig.GetString(StoragePathKey))
 
 	/*checking if the storage path is valid and has proper permissions*/
-	log.Trace("checking if the storage path is valid and has proper permissions")
+	log.Trace("checking if the storage path is valid and it exists")
 	if _, pathErr := os.Stat(globalConfig.GetString(StoragePathKey)); pathErr != nil {
 		log.WarnErr(pathErr)
 

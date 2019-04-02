@@ -21,8 +21,6 @@ package recording
 import (
 	"github.com/spf13/viper"
 
-	"github.com/cezarmathe/pwrp/config"
-
 	"github.com/cezarmathe/pwrp/gitops"
 )
 
@@ -50,12 +48,12 @@ func (recorder *Recorder) Record() bool {
 	log.Debug("initializing gitops logging")
 	gitops.InitLogging(log.GetParams())
 
-	log.Trace("storage path: ", recorder.Config.Get(config.StoragePathKey))
+	log.Trace("storage path: ", recorder.Config.Get(StoragePathKey))
 
 	log.Trace("iterating over repository list")
 	for _, repositoryURL := range recorder.Config.GetStringSlice(RepositoryListKey) {
 		log.Trace("operating on URL ", repositoryURL)
-		repository, err := gitops.Clone(repositoryURL, recorder.Config.GetString(config.StoragePathKey))
+		repository, err := gitops.Clone(repositoryURL, recorder.Config.GetString(StoragePathKey))
 		if err != nil {
 			log.ErrorErr(err, "error encountered when loading the repository ", repositoryURL)
 			shouldContinue = false

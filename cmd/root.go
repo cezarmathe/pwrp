@@ -39,7 +39,7 @@ func init() {
 	cobra.OnInitialize(initConfig)
 
 	/*Persistent flags*/
-	rootCmd.PersistentFlags().StringVarP(&configFilePath, "_config", "c", "", "_config file (default is $HOME/._config/pwrp.toml)")
+	rootCmd.PersistentFlags().StringVarP(&configFilePath, "config", "c", "", "config file (default is $HOME/.config/pwrp.toml)")
 	rootCmd.PersistentFlags().BoolP("verbose", "v", false, "verbose level logging")
 }
 
