@@ -50,7 +50,7 @@ func Execute() {
 	defer log.DebugFunctionReturned()
 
 	log.Debug("adding additional commands to the root command")
-	rootCmd.AddCommand(validateConfigCmd)
+	rootCmd.AddCommand(configCmd)
 	rootCmd.AddCommand(recordCmd)
 
 	if err := rootCmd.Execute(); err != nil {

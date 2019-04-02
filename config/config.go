@@ -21,9 +21,15 @@ package config
 import (
 	"os"
 
+	"github.com/mitchellh/go-homedir"
 	"github.com/phayes/permbits"
+	"github.com/spf13/viper"
 
 	"github.com/cezarmathe/pwrp/recording"
+)
+
+const (
+	StoragePathKey = "storage_path"
 )
 
 /*Config is a container for the entire utility configuration*/
@@ -32,15 +38,36 @@ type Config struct {
 	StoragePath string            `toml:"storage_path"`
 }
 
+func NewDummyConfig(dummyConfig *viper.Viper) {
+	log.DebugFunctionCalled(*dummyConfig)
+
+	log.Debug("initialize recording logging")
+	recording.InitLogging(log.GetParams())
+
+	/*find home directory.*/
+	log.Trace("finding home directory")
+	home, err := homedir.Dir()
+	if err != nil {
+		log.FatalErr(err, "encountered an error when trying to find the home directory")
+	}
+
+	recording.NewDummyConfig(dummyConfig)
+	viper.Set(StoragePathKey, home+"/.local/share/pwrp")
+
+	log.DebugFunctionReturned()
+}
+
 /*ValidateConfig validates the configuration*/
-func ValidateConfig(config *Config) bool {
-	log.DebugFunctionCalled(config)
+func ValidateConfig(globalConfig *viper.Viper) bool {
+	log.DebugFunctionCalled(globalConfig)
 
 	var shouldContinue = true
 
+	log.Trace("storage path: ", globalConfig.GetString(StoragePathKey))
+
 	/*checking if the storage path is valid and has proper permissions*/
-	log.Trace("checking if the storage path is valid and has proper permissions")
-	if _, pathErr := os.Stat(config.StoragePath); pathErr != nil {
+	log.Trace("checking if the storage path is valid and it exists")
+	if _, pathErr := os.Stat(globalConfig.GetString(StoragePathKey)); pathErr != nil {
 		log.WarnErr(pathErr)
 
 		/*check if the directory exists and create it if it doesn't*/
@@ -59,12 +86,12 @@ func ValidateConfig(config *Config) bool {
 			permbits.UpdateFileMode(fileMode, permissions)
 
 			log.Trace("creating storage directory")
-			err := os.MkdirAll(config.StoragePath, *fileMode)
+			err := os.MkdirAll(globalConfig.GetString(StoragePathKey), *fileMode)
 			if err != nil {
-				log.ErrorErr(NewErrCreateStorageDir(config.StoragePath), "storage path validation failed")
+				log.ErrorErr(NewErrCreateStorageDir(globalConfig.GetString(StoragePathKey)), "storage path validation failed")
 				shouldContinue = false
 			} else {
-				log.Info("created storage directory at " + config.StoragePath)
+				log.Info("created storage directory at " + globalConfig.GetString(StoragePathKey))
 			}
 		} else { /*another error*/
 			log.ErrorErr(pathErr, "unknown error")
@@ -76,9 +103,9 @@ func ValidateConfig(config *Config) bool {
 
 	/*check if the directory has the proper permissions*/
 	log.Trace("checking if the storage directory has the proper permissions")
-	if permissions, err := permbits.Stat(config.StoragePath); err == nil {
+	if permissions, err := permbits.Stat(globalConfig.GetString(StoragePathKey)); err == nil {
 		if !permissions.UserExecute() || !permissions.UserRead() || !permissions.UserWrite() {
-			log.ErrorErr(NewErrNoPermissions(config.StoragePath))
+			log.ErrorErr(NewErrNoPermissions(globalConfig.GetString(StoragePathKey)))
 			shouldContinue = false
 		}
 	} else {
@@ -88,7 +115,7 @@ func ValidateConfig(config *Config) bool {
 	/*running the recording validation*/
 	log.Trace("running the recorder validation")
 	recording.InitLogging(log.GetParams())
-	shouldContinue = recording.NewRecorder(config.Recording, "").ValidateConfig() && shouldContinue
+	shouldContinue = recording.NewRecorder(globalConfig).ValidateConfig() && shouldContinue
 
 	log.DebugFunctionReturned(shouldContinue)
 	return shouldContinue
