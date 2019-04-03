@@ -69,7 +69,7 @@ func ValidateConfig(globalConfig *viper.Viper) bool {
 		/*check if the directory exists and create it if it doesn't*/
 		log.Trace("checking if the path exists")
 		if os.IsNotExist(pathErr) {
-			log.Warn("storage path ,", globalConfig.GetString(keys.StoragePathKey), " does not exist, attempting to create it")
+			log.Warn("storage path ", globalConfig.GetString(keys.StoragePathKey), " does not exist, attempting to create it")
 
 			var permissions permbits.PermissionBits
 
@@ -103,6 +103,8 @@ func ValidateConfig(globalConfig *viper.Viper) bool {
 		if !permissions.UserExecute() || !permissions.UserRead() || !permissions.UserWrite() {
 			log.ErrorErr(NewErrNoPermissions(globalConfig.GetString(keys.StoragePathKey)))
 			shouldContinue = false
+		} else {
+			log.Trace("the storage directory has the proper permissions")
 		}
 	} else {
 		log.ErrorErr(err, "unknown error")
