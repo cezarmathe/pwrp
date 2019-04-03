@@ -27,7 +27,7 @@ import (
 )
 
 const (
-	MetadataBranchName = "_pwrp-metadata"
+	metadataBranchName = "_pwrp-metadata"
 )
 
 /*Recorder is a struct that does the recording process.*/
@@ -67,7 +67,7 @@ func (recorder *Recorder) Record() bool {
 		}
 		log.Info("repository ", repositoryURL, " loaded successfully")
 
-		_, _ = repository.Branch(MetadataBranchName)
+		_, _ = repository.Branch(metadataBranchName)
 
 	}
 	log.Trace("finished iterating over repository list")
