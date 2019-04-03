@@ -54,6 +54,9 @@ func initConfig() {
 	/*env configurations*/
 	config.SetEnvPrefix("pwrp")
 	err = config.BindEnv("debug")
+	if err != nil {
+		log.FatalErr(err, "encountered an error when binding an environment variable")
+	}
 	err = config.BindEnv("verbose")
 	if err != nil {
 		log.FatalErr(err, "encountered an error when binding an environment variable")
@@ -88,7 +91,7 @@ func initConfig() {
 	config.SetDefault(keys.RecordingRepositoryListKey, []string{})
 	config.SetDefault(keys.RecordingProtocolKey, gitops.DefaultProtocol)
 	config.SetDefault(keys.RecordingSkipsMissingBranchKey, false)
-	config.SetDefault(keys.RecordingSkipsBadUrlKey, false)
+	config.SetDefault(keys.RecordingSkipsBadURLKey, false)
 	config.SetDefault(keys.RecordingSkipsBadProtocolKey, false)
 	config.SetDefault(keys.RecordingSkipsAllKey, false)
 

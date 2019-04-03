@@ -28,9 +28,12 @@ const (
 
 	recordingSkipsBaseKey = recordingBaseKey + separator + "skips"
 
-	/*Keys for the recording skips*/
+	/*RecordingSkipsMissingBranchKey is a key for the recording skip for a missing branch*/
 	RecordingSkipsMissingBranchKey = recordingSkipsBaseKey + separator + "missing_branch"
-	RecordingSkipsBadUrlKey        = recordingSkipsBaseKey + separator + "bad_url"
-	RecordingSkipsBadProtocolKey   = recordingSkipsBaseKey + separator + "bad_protocol"
-	RecordingSkipsAllKey           = recordingSkipsBaseKey + separator + "all"
+	/*RecordingSkipsBadURLKey is a key for the recording skip for a bad URL*/
+	RecordingSkipsBadURLKey = recordingSkipsBaseKey + separator + "bad_url"
+	/*RecordingSkipsBadProtocolKey is a key for the recording skip for a bad protocol*/
+	RecordingSkipsBadProtocolKey = recordingSkipsBaseKey + separator + "bad_protocol"
+	/*RecordingSkipsAllKey is a key for the recording skip for all errors*/
+	RecordingSkipsAllKey = recordingSkipsBaseKey + separator + "all"
 )

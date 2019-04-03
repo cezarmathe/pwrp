@@ -48,7 +48,7 @@ func NewDummyConfig(dummyConfig *viper.Viper) {
 	dummyConfig.Set(keys.RecordingProtocolKey, gitops.DefaultProtocol)
 
 	dummyConfig.Set(keys.RecordingSkipsMissingBranchKey, false)
-	dummyConfig.Set(keys.RecordingSkipsBadUrlKey, false)
+	dummyConfig.Set(keys.RecordingSkipsBadURLKey, false)
 	dummyConfig.Set(keys.RecordingSkipsBadProtocolKey, false)
 	dummyConfig.Set(keys.RecordingSkipsAllKey, false)
 
@@ -99,7 +99,6 @@ func (recorder *Recorder) ValidateConfig() bool {
 		if len(splitUrl) == 1 {
 			log.Trace("URL ", *repoUrl, " has no protocol, adding the default protocol ", gitops.DefaultProtocol)
 			*repoUrl = strings.Join([]string{string(gitops.DefaultProtocol), "://", *repoUrl}, "")
-			splitUrl = strings.Split(*repoUrl, "://")
 
 		} else if urlHasProtocol(*repoUrl, gitops.GIT) || urlHasProtocol(*repoUrl, gitops.SSH) || urlHasProtocol(*repoUrl, gitops.HTTPS) {
 			log.Trace("the url ", *repoUrl, " has a valid protocol")
@@ -110,7 +109,7 @@ func (recorder *Recorder) ValidateConfig() bool {
 		/*checking if the repoUrl is valid*/
 		_, err := url.ParseRequestURI(*repoUrl)
 		if err != nil {
-			checkConfigError(recorder.Config.GetBool(keys.RecordingSkipsBadUrlKey), &configIsValid, NewErrBadURL(*repoUrl))
+			checkConfigError(recorder.Config.GetBool(keys.RecordingSkipsBadURLKey), &configIsValid, NewErrBadURL(*repoUrl))
 		}
 	}
 	recorder.Config.Set(keys.RecordingRepositoryListKey, repositories)

@@ -26,6 +26,10 @@ import (
 	"github.com/cezarmathe/pwrp/gitops"
 )
 
+const (
+	MetadataBranchName = "_pwrp-metadata"
+)
+
 /*Recorder is a struct that does the recording process.*/
 type Recorder struct {
 	Config *viper.Viper
@@ -63,7 +67,7 @@ func (recorder *Recorder) Record() bool {
 		}
 		log.Info("repository ", repositoryURL, " loaded successfully")
 
-		_, err = repository.Branch("_pwrp")
+		_, _ = repository.Branch(MetadataBranchName)
 
 	}
 	log.Trace("finished iterating over repository list")

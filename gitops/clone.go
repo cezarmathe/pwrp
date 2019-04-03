@@ -54,11 +54,15 @@ func Clone(repositoryURL, storagePath string) (*git.Repository, error) {
 		log.Trace("repository exists, pulling remote changes")
 		workTree, err := gitRepo.Worktree()
 		if err != nil {
-			log.WarnErr(err, "encountered an error when extracting the repository work tree")
+			log.ErrorErr(err, "encountered an error when extracting the repository work tree")
 			return nil, err
 		}
 
 		err = workTree.Pull(&git.PullOptions{RemoteName: "origin"})
+		if err != nil {
+			log.ErrorErr(err, "encountered an error when pulling the remote changes")
+			return nil, err
+		}
 	}
 	if gitRepo != nil {
 		log.DebugFunctionReturned(*gitRepo, err)
