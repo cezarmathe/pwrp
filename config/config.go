@@ -35,6 +35,7 @@ type Config struct {
 	StoragePath string            `toml:"storage_path"`
 }
 
+/*NewDummyConfig creates a new dummy configuration*/
 func NewDummyConfig(dummyConfig *viper.Viper) {
 	log.DebugFunctionCalled(*dummyConfig)
 

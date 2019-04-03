@@ -23,13 +23,14 @@ import (
 )
 
 const (
-	TAG = "gitops"
+	logTag = "gitops"
 )
 
 var (
 	log *smartlogger.SmartLogger
 )
 
+/*InitLogging initializes this package's logging*/
 func InitLogging(logParams smartlogger.LogParams) {
-	log = smartlogger.FromLogParams(logParams, TAG)
+	log = smartlogger.FromLogParams(logParams, logTag)
 }

@@ -89,7 +89,7 @@ func (log *SmartLogger) DebugFunctionCalled(params ...interface{}) {
 	}
 }
 
-/*DebugFunctionCalled logs a message on Debug level stating that the calling function returned.*/
+/*DebugFunctionReturned logs a message on Debug level stating that the calling function returned.*/
 func (log *SmartLogger) DebugFunctionReturned(returnValues ...interface{}) {
 	if !log.enableDebug {
 		return

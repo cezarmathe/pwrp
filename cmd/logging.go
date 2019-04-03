@@ -25,7 +25,7 @@ import (
 )
 
 const (
-	TAG = "cli"
+	logTag = "cli"
 )
 
 var (
@@ -33,5 +33,5 @@ var (
 )
 
 func initLogging(enableDebug bool, level logrus.Level) {
-	log = smartlogger.NewSmartLogger(enableDebug, level, TAG)
+	log = smartlogger.NewSmartLogger(enableDebug, level, logTag)
 }

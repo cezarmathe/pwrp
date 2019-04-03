@@ -20,11 +20,13 @@ package smartlogger
 
 import "github.com/sirupsen/logrus"
 
+/*LogParams is a container for easily transferring logging parameters*/
 type LogParams struct {
 	Debug bool
 	Level logrus.Level
 }
 
+/*GetParams returns the parameters of a SmartLogger*/
 func (log *SmartLogger) GetParams() LogParams {
 	return LogParams{
 		log.enableDebug,

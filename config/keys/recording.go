@@ -21,11 +21,14 @@ package keys
 const (
 	recordingBaseKey = "recording"
 
+	/*RecordingRepositoryListKey is a key for the recording repository list*/
 	RecordingRepositoryListKey = recordingBaseKey + separator + "repositories"
-	RecordingProtocolKey       = recordingBaseKey + separator + "protocol"
+	/*RecordingProtocolKey is a key for the recording repository cloning protocol*/
+	RecordingProtocolKey = recordingBaseKey + separator + "protocol"
 
 	recordingSkipsBaseKey = recordingBaseKey + separator + "skips"
 
+	/*Keys for the recording skips*/
 	RecordingSkipsMissingBranchKey = recordingSkipsBaseKey + separator + "missing_branch"
 	RecordingSkipsBadUrlKey        = recordingSkipsBaseKey + separator + "bad_url"
 	RecordingSkipsBadProtocolKey   = recordingSkipsBaseKey + separator + "bad_protocol"

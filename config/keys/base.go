@@ -21,5 +21,6 @@ package keys
 const (
 	separator = "."
 
+	/*StoragePathKey is a key for the storage path resource*/
 	StoragePathKey = "storage_path"
 )

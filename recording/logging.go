@@ -23,13 +23,14 @@ import (
 )
 
 const (
-	TAG = "recording"
+	logTag = "recording"
 )
 
 var (
 	log *smartlogger.SmartLogger
 )
 
+/*InitLogging initializes this package's logging*/
 func InitLogging(logParams smartlogger.LogParams) {
-	log = smartlogger.FromLogParams(logParams, TAG)
+	log = smartlogger.FromLogParams(logParams, logTag)
 }
