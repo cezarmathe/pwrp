@@ -66,12 +66,13 @@ func runConfigCmd(cmd *cobra.Command, args []string) {
 	}
 	if configCmdValidateFlag {
 		log.Info("validating the configuration file")
-		log.Info("validation passed: ", runConfigValidation())
+		runConfigValidation(true)
 	}
 }
 
-func runConfigValidation() bool {
+func runConfigValidation(mustRewrite bool) bool {
 	log.DebugFunctionCalled()
+	defer log.DebugFunctionReturned()
 
 	log.Info("validating the configuration file")
 
@@ -81,8 +82,24 @@ func runConfigValidation() bool {
 	log.Trace("running the config validation")
 	pass := cfg.ValidateConfig(config)
 
-	log.DebugFunctionReturned(pass)
-	return pass
+	log.Info("validation passed: ", pass)
+
+	if pass {
+		log.Trace("rewriting configuration file")
+
+		err := config.WriteConfig()
+		if err != nil {
+			if mustRewrite {
+				log.ErrorErr(err, "failed to rewrite the configuration file")
+			} else {
+				log.WarnErr(err, "failed to rewrite the configuration file")
+			}
+		} else {
+			log.Info("rewrote the configuration file")
+		}
+		return true
+	}
+	return false
 }
 
 func runConfigExport() {
