@@ -59,17 +59,24 @@ func (recorder *Recorder) Record() bool {
 	log.Trace("iterating over repository list")
 	for _, repositoryURL := range recorder.Config.GetStringSlice(keys.RecordingRepositoryListKey) {
 		log.Trace("operating on URL ", repositoryURL)
-		repository, err := gitops.Clone(repositoryURL, recorder.Config.GetString(keys.StoragePathKey))
+		repository, err := gitops.Load(repositoryURL, recorder.Config.GetString(keys.StoragePathKey))
 		if err != nil {
 			log.ErrorErr(err, "error encountered when loading the repository ", repositoryURL)
 			shouldContinue = false
 			break
 		}
+
+		log.Trace("switching to the metadata branch")
+		pass := gitops.Checkout(repository, metadataBranchName)
+
+		if !pass {
+			shouldContinue = false
+			continue
+		}
+
 		log.Info("repository ", repositoryURL, " loaded successfully")
-
-		_, _ = repository.Branch(metadataBranchName)
-
 	}
+
 	log.Trace("finished iterating over repository list")
 	log.Info("recording process finished")
 	log.DebugFunctionReturned(shouldContinue)

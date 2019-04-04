@@ -30,7 +30,7 @@ import (
 
 var (
 	configCmd = &cobra.Command{
-		Use:   "_config",
+		Use:   "config",
 		Short: "Configuration related tools",
 		Run:   runConfigCmd,
 	}

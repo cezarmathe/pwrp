@@ -19,13 +19,14 @@
 package gitops
 
 import (
+	"reflect"
 	"strings"
 
 	"gopkg.in/src-d/go-git.v4"
 )
 
-/*Clone clones a repository in a given path with specifically-selected options.*/
-func Clone(repositoryURL, storagePath string) (*git.Repository, error) {
+/*Load clones a repository in a given path with specifically-selected options.*/
+func Load(repositoryURL, storagePath string) (*git.Repository, error) {
 	log.DebugFunctionCalled(repositoryURL, storagePath)
 
 	log.Trace("extract repository name from ", repositoryURL)
@@ -60,8 +61,12 @@ func Clone(repositoryURL, storagePath string) (*git.Repository, error) {
 
 		err = workTree.Pull(&git.PullOptions{RemoteName: "origin"})
 		if err != nil {
-			log.ErrorErr(err, "encountered an error when pulling the remote changes")
-			return nil, err
+			if reflect.TypeOf(err) == reflect.TypeOf(git.NoErrAlreadyUpToDate) {
+				log.Trace("repository is already up to date")
+			} else {
+				log.ErrorErr(err, "encountered an error when pulling the remote changes")
+				return nil, err
+			}
 		}
 	}
 	if gitRepo != nil {
