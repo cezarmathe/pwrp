@@ -19,7 +19,6 @@
 package gitops
 
 import (
-	"reflect"
 	"strings"
 
 	"gopkg.in/src-d/go-git.v4"
@@ -52,22 +51,7 @@ func Load(repositoryURL, storagePath string) (*git.Repository, error) {
 			Depth: 1,
 		})
 	} else {
-		log.Trace("repository exists, pulling remote changes")
-		workTree, err := gitRepo.Worktree()
-		if err != nil {
-			log.ErrorErr(err, "encountered an error when extracting the repository work tree")
-			return nil, err
-		}
-
-		err = workTree.Pull(&git.PullOptions{RemoteName: "origin"})
-		if err != nil {
-			if reflect.TypeOf(err) == reflect.TypeOf(git.NoErrAlreadyUpToDate) {
-				log.Trace("repository is already up to date")
-			} else {
-				log.ErrorErr(err, "encountered an error when pulling the remote changes")
-				return nil, err
-			}
-		}
+		log.Trace("repository exists")
 	}
 	if gitRepo != nil {
 		log.DebugFunctionReturned(*gitRepo, err)

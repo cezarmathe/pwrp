@@ -19,8 +19,6 @@
 package gitops
 
 import (
-	"reflect"
-
 	"gopkg.in/src-d/go-git.v4"
 	"gopkg.in/src-d/go-git.v4/plumbing"
 )
@@ -38,26 +36,37 @@ func Checkout(repository *git.Repository, branchName string) bool {
 	workTree, err := repository.Worktree()
 	if err != nil {
 		log.ErrorErr(err, "could not extract the work tree")
-		return false
+		return *success
+	}
+
+	head, err := repository.Head()
+	if head.Name() == plumbing.NewBranchReferenceName(branchName) {
+		log.Trace("already on metadata branch")
+		*success = true
+		return *success
 	}
 
 	log.Trace("checking if the branch exists")
 	_, err = repository.Branch(branchName)
 	if err != nil {
 		/*if error is branch does not exist, create it*/
-		if reflect.TypeOf(err) == reflect.TypeOf(git.ErrBranchNotFound) {
+		if err == git.ErrBranchNotFound {
 			log.WarnErr(err, "branch ", branchName, " does not exist, attempting to create it")
 
 			err = workTree.Checkout(&git.CheckoutOptions{
 				Branch: plumbing.NewBranchReferenceName(branchName),
+				Hash:   plumbing.ZeroHash,
 				Create: true,
 			})
 
 			if err != nil {
 				log.ErrorErr(err, "could not create the branch ", branchName)
-				return false
+				return *success
 			}
 			log.Info("created the metadata branch ", branchName)
+
+			*success = true
+			return *success
 		} else {
 			log.ErrorErr(err, "encountered an error when switching to the branch ", branchName)
 		}
@@ -69,13 +78,14 @@ func Checkout(repository *git.Repository, branchName string) bool {
 		})
 		if err != nil {
 			log.ErrorErr(err, "could not check out the metadata branch")
-			return false
+			return *success
 		}
 	}
 
 	if err != nil {
 		log.ErrorErr(err, "could not checkout the branch ", branchName)
-		return false
+		return *success
 	}
-	return true
+	*success = true
+	return *success
 }
