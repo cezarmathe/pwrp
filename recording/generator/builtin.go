@@ -17,3 +17,28 @@
  */
 
 package generator
+
+import "net/http"
+
+func httpRequest(generator *Generator) ([]byte, error) {
+
+	url, err := generator.getArg("url")
+	if err != nil {
+		return nil, err
+	}
+
+	response, err := http.Get(url.(string))
+	if err != nil {
+		return nil, err
+	}
+
+	byteResponse := make([]byte, response.ContentLength)
+
+	_, err = response.Body.Read(byteResponse)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return byteResponse, nil
+}

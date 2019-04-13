@@ -18,14 +18,34 @@
 
 package generator
 
-/*Generator is a container for a task that runs on a project at the moment of recording.*/
-type Generator struct {
-	Key  string `toml:"report_key"`
-	Task string `toml:"task"`
-	Path string `toml:"path"`
-	Args []Args `toml:"args"`
+import "github.com/pkg/errors"
+
+/*ArgUse tells the generator what is the application of a certain argument.*/
+type ArgUsage string
+
+const (
+	FlagArgUsage            ArgUsage = "flag"
+	EnvironmentArgUsage     ArgUsage = "environment"
+	CommandArgumentArgUsage ArgUsage = "command_arg"
+	SpecialArgUsage         ArgUsage = "special"
+)
+
+var (
+	ErrArgNotFound = errors.New("arg not found")
+)
+
+/*Args is a container for generator arguments.*/
+type Args struct {
+	Usage ArgUsage    `toml:"usage"`
+	Key   string      `toml:"key"`
+	Value interface{} `toml:"value"`
 }
 
-func (generator *Generator) Run(output *[]byte) error {
-	return nil
+func (generator *Generator) getArg(key string) (interface{}, error) {
+	for _, arg := range generator.Args {
+		if arg.Key == key {
+			return arg.Value, nil
+		}
+	}
+	return nil, ErrArgNotFound
 }
