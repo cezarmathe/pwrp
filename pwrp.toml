@@ -14,3 +14,13 @@ protocol = "git"
     bad_url = false
     bad_protocol = false
     all = false
+
+    [recording.generators]
+        [[recording.generators.spec]]
+            report_key = "last_update"
+            task = "last-update"
+            path = "~/.local/share/pwrp/cezarmathe/test"
+                [[generators.spec.args]]
+                usage = "command_arg"
+                key = "last_update"
+                value = ""
